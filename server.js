@@ -33,7 +33,7 @@ export function createServer(){return http.createServer(async(req,res)=>{
   if(!['GET','HEAD'].includes(req.method))return json(res,405,{error:'Method not allowed'});
   // Serve an explicit public-file allowlist; environment and server files are inaccessible.
   const filename=url.pathname==='/'?'index.html':url.pathname.slice(1);
-  if(!['index.html','style.css','motion.css','refinements.css','studio.css','conversation.css','portal.css','brief-ux.css','signal-lab.css','polish.css','hero-vortex.js','signal-lab.js','app.js','motion.js','studio.js','brief.js','brief-experience.js','portal.js','icons.js','data.js','knowledge.js','favicon.svg','assets/curiosity-knot.png'].includes(filename))return json(res,404,{error:'Not found'});
+  if(!['index.html','style.css','motion.css','refinements.css','studio.css','conversation.css','portal.css','brief-ux.css','signal-lab.css','polish.css','hero-vortex.js','signal-lab.js','app.js','portfolio.js','motion.js','studio.js','brief.js','brief-experience.js','portal.js','icons.js','data.js','knowledge.js','favicon.svg','assets/curiosity-knot.png'].includes(filename))return json(res,404,{error:'Not found'});
   const bytes=await readFile(path.join(root,filename));res.writeHead(200,{'Content-Type':types[path.extname(filename)],'Cache-Control':'no-cache'});res.end(req.method==='HEAD'?undefined:bytes);
  }catch{if(!res.headersSent)json(res,500,{error:'Something went wrong'});else res.end();}
 });}
