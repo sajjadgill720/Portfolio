@@ -37,4 +37,6 @@ export function createServer(){return http.createServer(async(req,res)=>{
   const bytes=await readFile(path.join(root,filename));res.writeHead(200,{'Content-Type':types[path.extname(filename)],'Cache-Control':'no-cache'});res.end(req.method==='HEAD'?undefined:bytes);
  }catch{if(!res.headersSent)json(res,500,{error:'Something went wrong'});else res.end();}
 });}
-if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){const port=Number(process.env.PORT)||3000;createServer().listen(port,()=>console.log(`Portfolio running at http://localhost:${port}`));}
+const server=createServer();
+export default server;
+if(process.argv[1]&&path.resolve(process.argv[1])===fileURLToPath(import.meta.url)){const port=Number(process.env.PORT)||3000;server.listen(port,()=>console.log(`Portfolio running at http://localhost:${port}`));}
