@@ -58,7 +58,7 @@ Tests exercise the actual HTTP server: public asset serving, private-file denial
 
 ## Editing
 
-`public/index.html`: page structure and copy. `public/style.css`: visual system and responsive layouts. `public/data.js`: profile, featured projects, skills, and archive. `public/knowledge.js`: local assistant. `public/app.js`: interactions, vortex, chat, brief builder. `server.js`: static hosting and AI endpoint.
+`public/index.html`: page structure and copy. `public/style.css`: visual system and responsive layouts. `public/data.js`: profile, featured projects, skills, and archive. `public/knowledge.js`: local assistant. `public/app.js`: interactions, vortex, chat, brief builder. `dev-server.js`: local static hosting and AI endpoint.
 
 This workspace was empty and has no Git remote. Nothing has been pushed or published.
 
