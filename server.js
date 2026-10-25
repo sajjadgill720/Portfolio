@@ -5,7 +5,7 @@ import {fileURLToPath} from 'node:url';
 import {profile,projects,projectUrl} from './public/data.js';
 import {answerLocally} from './public/knowledge.js';
 const root=path.join(path.dirname(fileURLToPath(import.meta.url)),'public');
-const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.json':'application/json'};
+const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.json':'application/json'};
 const limits=new Map();
 const json=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store'});res.end(JSON.stringify(data));};
 export function createServer(){return http.createServer(async(req,res)=>{
@@ -13,7 +13,7 @@ export function createServer(){return http.createServer(async(req,res)=>{
  res.setHeader('Content-Security-Policy',"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
  try{
   const url=new URL(req.url,'http://localhost');
-  if(url.pathname==='/api/config'&&req.method==='GET')return json(res,200,{ai:!!(process.env.OPENAI_API_KEY&&process.env.OPENAI_MODEL),email:/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(process.env.CONTACT_EMAIL||'')?process.env.CONTACT_EMAIL:null});
+  if(url.pathname==='/api/config'&&req.method==='GET')return json(res,200,{ai:!!(process.env.OPENAI_API_KEY&&process.env.OPENAI_MODEL),email:/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(process.env.CONTACT_EMAIL||'')?process.env.CONTACT_EMAIL:profile.email});
   if(url.pathname==='/api/chat'){
    if(req.method!=='POST')return json(res,405,{error:'Method not allowed'});
    if(req.headers.origin&&req.headers.origin!==`http://${req.headers.host}`&&req.headers.origin!==`https://${req.headers.host}`)return json(res,403,{error:'Origin not allowed'});
@@ -33,7 +33,7 @@ export function createServer(){return http.createServer(async(req,res)=>{
   if(!['GET','HEAD'].includes(req.method))return json(res,405,{error:'Method not allowed'});
   // Serve an explicit public-file allowlist; environment and server files are inaccessible.
   const filename=url.pathname==='/'?'index.html':url.pathname.slice(1);
-  if(!['index.html','style.css','motion.css','app.js','motion.js','data.js','knowledge.js','favicon.svg'].includes(filename))return json(res,404,{error:'Not found'});
+  if(!['index.html','style.css','motion.css','refinements.css','studio.css','conversation.css','app.js','motion.js','studio.js','brief.js','icons.js','data.js','knowledge.js','favicon.svg','assets/curiosity-knot.png'].includes(filename))return json(res,404,{error:'Not found'});
   const bytes=await readFile(path.join(root,filename));res.writeHead(200,{'Content-Type':types[path.extname(filename)],'Cache-Control':'no-cache'});res.end(req.method==='HEAD'?undefined:bytes);
  }catch{if(!res.headersSent)json(res,500,{error:'Something went wrong'});else res.end();}
 });}

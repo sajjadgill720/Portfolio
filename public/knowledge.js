@@ -2,7 +2,7 @@ import {profile,projects,projectUrl} from './data.js';
 export function answerLocally(question) {
  const q=question.toLowerCase();
  if (/price|budget|cost|rate|timeline|available|availability/.test(q)) return {text:'Rates, availability, and timelines depend on the scope and aren’t published here. Use “Project brief” to outline your idea, then connect with Sajjad through GitHub to discuss it.',sources:[{title:'GitHub profile',url:profile.github}]};
- if (/contact|email|hire|connect/.test(q)) return {text:'You can connect with Sajjad through his GitHub profile. For a collaboration, prepare a project brief here and copy or download it before reaching out.',sources:[{title:'Connect on GitHub',url:profile.github}]};
+ if (/contact|email|hire|connect/.test(q)) return {text:`You can email Sajjad at ${profile.email}. For a collaboration, use Project brief to outline your idea, review it, and open an email draft. You can also copy or download it. Nothing is sent automatically.`,sources:[{title:'Connect on GitHub',url:profile.github}]};
  if (/skill|stack|technolog|tools/.test(q)) return {text:`Sajjad works across ${profile.skills.join(', ')}. His focus spans full-stack applications, automation, and applied AI.`,sources:[{title:'Profile & technologies',url:profile.github+'/sajjadgill720'}]};
  const terms=q.match(/[a-z0-9]+/g)||[];
  const ranked=projects.map(p=>({p,score:terms.filter(t=>t.length>2&&`${p.name} ${p.slug} ${p.description} ${p.category} ${p.tags.join(' ')}`.toLowerCase().includes(t)).length})).sort((a,b)=>b.score-a.score);

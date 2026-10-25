@@ -16,7 +16,7 @@ Open http://localhost:3000. The development server also serves the production ap
 ## What you need to do
 
 1. Review the name, bio, skills, project descriptions, and project status in `public/data.js`. Eight documented projects are featured; the remaining twelve public project repositories are linked in the archive. No employment history or qualifications have been invented.
-2. Optionally add your email: copy `.env.example` to `.env`, then set `CONTACT_EMAIL`. The contact link currently points to your verified GitHub profile. A photo, LinkedIn, CV, and custom domain can be added later when you provide them.
+2. Your contact email is configured as `sajjadajmal405@gmail.com`, verified from your connected GitHub profile. To override it on the Node server, set `CONTACT_EMAIL` in `.env`; for static hosting, edit `profile.email` in `public/data.js`. A photo, LinkedIn, CV, and custom domain can be added later.
 3. To enable AI conversations, put `OPENAI_API_KEY` and an available Responses API model ID in `OPENAI_MODEL` in `.env`, then restart. Use an API account with billing enabled. Keep the key on the server and never put `.env` in a repository. No paid API call has been tested without your credentials.
 4. Deploy either the whole project to a Node-capable host using `npm start`, or run `npm run build` and publish the contents of `dist` to static hosting. The Node version supports AI. Static hosting, including GitHub Pages, supports the built-in knowledge assistant and brief builder, but cannot run the AI endpoint. Serve static files over HTTP(S), rather than double-clicking the HTML file.
 5. After deployment, check a project filter, ask the assistant about GymRetain, download a project brief, and test your contact link on a phone. If using AI, verify a real response and set provider usage limits before sharing publicly.
@@ -26,12 +26,20 @@ Open http://localhost:3000. The development server also serves the production ap
 - Grounded local answers about projects, background, and tools, with repository source links.
 - Optional server-side OpenAI Responses API integration; source knowledge is supplied in the server instructions. The model has no action tools and cannot send messages or book meetings.
 - Session-only browser history, New chat, conversation export, keyboard submission, loading feedback, and graceful fallback when the provider is unavailable.
-- An editable project brief with copy and text download. Drafts remain in browser session storage. Nothing is submitted or emailed automatically.
+- A guided three-step project brief with required-field validation, budget/timeline preferences, session drafts, an editable review, copy/download, and an Email brief action that opens an email draft in the visitor's email app. The visitor sends it manually.
 - Input limits, same-origin validation, request timeouts, an explicit static-file allowlist, and a simple in-memory rate limit of 20 requests per minute per socket IP. This limit is per server process; multiple instances need a shared limiter. Behind a reverse proxy, visitors may share the proxy's IP; configure a trusted deployment-specific limiter before a high-traffic AI launch.
 
 Messages are stored in sessionStorage on the visitor's browser. With AI configured, the latest 12 messages are sent through the server to OpenAI with `store:false`. This is not a promise of zero provider retention. The app does not log message bodies or persist conversations on the server.
 
 ## Visuals and content
+
+The lower-page studio redesign adds an asymmetric motion-poster gallery, an ImageGen-created ceramic ribbon sculpture, animated service blueprints, illustrated process stages, grouped toolkit cards, and a procedural particle network in the contact section. See [design notes and exact generation prompt](docs/studio-design.md). `public/studio.js` and `public/studio.css` implement these sections; the generated project asset is `public/assets/curiosity-knot.png`.
+
+The landing page now follows the supplied visual reference: a larger vortex, original illustrated capability labels, a subtle landscape base, and a light/dark toggle. The saved theme preference stays in localStorage. The project count reflects the 20 verified public project repositories; the page does not invent years of experience.
+
+The TV uses native document scrolling and CSS sticky positioning to advance through eight projects before continuing to the grid. It never cancels wheel or touch scrolling. Visitors can turn off “Scroll through projects,” jump to a channel, or use “Skip to project grid” / “Continue down.” Scrolling upward reverses the sequence. Reduced-motion mode and small viewports without sufficient room use the regular unpinned player with manual controls.
+
+`public/icons.js` contains original SVG artwork for all eight project themes and the landing capabilities. No icon packs, favicons from other sites, browser assets, or downloaded illustrations are used.
 
 The motion extension includes a draggable eight-cover project deck, a TV-inspired project player with eight original animated illustrations, numbered channels, a range dial, keyboard controls, and screen swipes. Each project also has a notes dialog and assistant handoff. Scroll reveals, project-art tilt, animated diagrams, and a four-stage process section complete the browsing experience. The player's Pause all motion control also controls the hero vortex and ambient CSS animations; reduced-motion settings disable them. Project-player and deck animations pause offscreen.
 

@@ -1,3 +1,4 @@
+import {icon} from './icons.js';
 // Original motion graphics and interactions inspired by the reference browsing patterns.
 export function initMotion({projects,projectUrl,escape,concept,openChat,send}){
  const $=s=>document.querySelector(s),reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -17,7 +18,10 @@ export function initMotion({projects,projectUrl,escape,concept,openChat,send}){
  function showChannel(index,animate=true){
   active=(index+projects.length)%projects.length;const p=projects[active],n=String(active+1).padStart(2,'0');
   $('#broadcast-copy').innerHTML=`<span class="channel-kicker"><b>CH ${n}</b> ${escape(p.category.toUpperCase())}</span><h3>${escape(p.name)}</h3><p class="channel-short">${escape(p.short)}</p><p>${escape(p.description)}</p><ul class="channel-stack">${p.tags.map(t=>`<li>${escape(t)}</li>`).join('')}</ul><span class="channel-status">${escape(p.status)} · source available on GitHub</span><div class="channel-actions"><a class="button dark" href="${projectUrl(p)}" target="_blank" rel="noreferrer">Explore source <span>↗</span></a><button class="text-button" data-project="${p.slug}">Project notes ↗</button></div>`;
-  $('#signal-art').innerHTML=art[p.theme];$('#tv-screen').className='tv-screen screen-'+p.theme;$('#screen-channel').textContent=`CH ${n} / ${p.name.toUpperCase()}`;$('#screen-title').textContent=p.short;$('#on-air-label').textContent=`ON AIR · CH ${n}`;$('#channel-dial').value=active;
+  $('#signal-art').innerHTML=art[p.theme];$('#tv-screen').className='tv-screen screen-'+p.theme;$('#screen-channel').innerHTML=icon(p.theme)+`<span>CH ${n} / ${escape(p.name.toUpperCase())}</span>`;$('#screen-title').textContent=p.short;$('#on-air-label').textContent=`ON AIR · CH ${n}`;$('#channel-dial').value=active;
+  if(p.theme==='demo')document.querySelectorAll('.signal-node>i').forEach((el,i)=>el.innerHTML=icon(['qa','automl','demo'][i]));
+  if($('#story-position'))$('#story-position').textContent=`${n} / 08`;
+  if($('#story-escape'))$('#story-escape').textContent=active===projects.length-1?'Continue down ↓':'Skip to project grid ↓';
   document.querySelectorAll('[data-channel]').forEach((b,i)=>{b.setAttribute('aria-pressed',String(i===active));b.classList.toggle('active',i===active);});
   $('.channel-knob').style.setProperty('--dial-angle',`${active*36-125}deg`);
   if(animate&&canMove()){
@@ -25,22 +29,48 @@ export function initMotion({projects,projectUrl,escape,concept,openChat,send}){
    $('.television').classList.remove('is-tuning');void $('.television').offsetWidth;$('.television').classList.add('is-tuning');clearTimeout(switchTimer);switchTimer=setTimeout(()=>$('.television').classList.remove('is-tuning'),440);
   }
  }
- buttons.onclick=e=>{const b=e.target.closest('[data-channel]');if(b)showChannel(Number(b.dataset.channel));};$('#previous-channel').onclick=()=>showChannel(active-1);$('#next-channel').onclick=()=>showChannel(active+1);$('#channel-dial').oninput=e=>showChannel(Number(e.target.value));
- $('.channel-controls').addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();showChannel(active+(e.key==='ArrowRight'?1:-1));buttons.querySelector(`[data-channel="${active}"]`).focus();}});
- let touchStart=null;$('#tv-screen').addEventListener('touchstart',e=>touchStart=e.changedTouches[0].clientX,{passive:true});$('#tv-screen').addEventListener('touchend',e=>{if(touchStart===null)return;const delta=e.changedTouches[0].clientX-touchStart;if(Math.abs(delta)>45)showChannel(active+(delta<0?1:-1));touchStart=null;},{passive:true});showChannel(0,false);
+ let storySeek=()=>{};
+ function selectChannel(index){showChannel(index);storySeek(active);}
+ buttons.onclick=e=>{const b=e.target.closest('[data-channel]');if(b)selectChannel(Number(b.dataset.channel));};$('#previous-channel').onclick=()=>selectChannel(active-1);$('#next-channel').onclick=()=>selectChannel(active+1);$('#channel-dial').oninput=e=>selectChannel(Number(e.target.value));
+ $('.channel-controls').addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='ArrowRight'){e.preventDefault();selectChannel(active+(e.key==='ArrowRight'?1:-1));buttons.querySelector(`[data-channel="${active}"]`).focus({preventScroll:true});}});
+ let touchStart=null;$('#tv-screen').addEventListener('touchstart',e=>touchStart=e.changedTouches[0].clientX,{passive:true});$('#tv-screen').addEventListener('touchend',e=>{if(touchStart===null)return;const delta=e.changedTouches[0].clientX-touchStart;if(Math.abs(delta)>45)selectChannel(active+(delta<0?1:-1));touchStart=null;},{passive:true});showChannel(0,false);
  const master=$('#motion-master');function syncMotion(){const paused=document.documentElement.classList.contains('motion-paused');master.textContent=paused?'Play all motion ▷':'Pause all motion Ⅱ';master.setAttribute('aria-pressed',String(paused));$('.tv-screen-meta>span:last-child').textContent=paused?'Ⅱ PAUSED':'● PLAY';if(paused){channelAnimation?.cancel();document.querySelectorAll('[data-tilt]').forEach(el=>el.style.removeProperty('transform'));}}
  master.onclick=()=>$('#motion-toggle').click();document.addEventListener('portfolio-motion-change',syncMotion);syncMotion();
 
  // The fan scrolls natively on touch and with a pointer drag on desktop.
- const deck=$('#deck-track');const deckSymbols=['✳','↗','≈','▥','◈','?','✺','∿'];
- deck.innerHTML=projects.map((p,i)=>`<button class="deck-card deck-${p.theme}" data-deck-channel="${i}" style="--card-angle:${[-11,-6,-2,5,10,4,-6,-10][i]}deg;--float-delay:${i*-.6}s" aria-label="Tune in to ${escape(p.name)}"><span class="deck-top">CH ${String(i+1).padStart(2,'0')}<span>${escape(p.category.split(' ')[0].toUpperCase())}</span></span><span class="deck-graphic" aria-hidden="true">${deckSymbols[i]}</span><span class="deck-name">${escape(p.name)}</span><span class="deck-bottom">${escape(p.tags[0])}<span>↗</span></span></button>`).join('');
+ const deck=$('#deck-track');
+ deck.innerHTML=projects.map((p,i)=>`<button class="deck-card deck-${p.theme}" data-deck-channel="${i}" style="--card-angle:${[-11,-6,-2,5,10,4,-6,-10][i]}deg;--float-delay:${i*-.6}s" aria-label="Tune in to ${escape(p.name)}"><span class="deck-top">CH ${String(i+1).padStart(2,'0')}<span>${escape(p.category.split(' ')[0].toUpperCase())}</span></span><span class="deck-graphic" aria-hidden="true">${icon(p.theme)}</span><span class="deck-name">${escape(p.name)}</span><span class="deck-bottom">${escape(p.tags[0])}<span>↗</span></span></button>`).join('');
  let drag=null,ignoreClick=false;
  deck.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'||e.button!==0)return;drag={x:e.clientX,scroll:deck.scrollLeft,moved:false};});
  deck.addEventListener('pointermove',e=>{if(!drag)return;const distance=e.clientX-drag.x;if(Math.abs(distance)>6){drag.moved=true;deck.classList.add('is-dragging');deck.setPointerCapture(e.pointerId);deck.scrollLeft=drag.scroll-distance;}});
  function endDrag(){if(!drag)return;ignoreClick=drag.moved;drag=null;deck.classList.remove('is-dragging');setTimeout(()=>ignoreClick=false,0);}
  deck.addEventListener('pointerup',endDrag);deck.addEventListener('pointercancel',endDrag);deck.addEventListener('lostpointercapture',endDrag);
- deck.addEventListener('click',e=>{if(ignoreClick){e.preventDefault();return;}const card=e.target.closest('[data-deck-channel]');if(card){showChannel(Number(card.dataset.deckChannel));$('#playground').scrollIntoView({behavior:canMove()?'smooth':'instant'});}});
+ deck.addEventListener('click',e=>{if(ignoreClick){e.preventDefault();return;}const card=e.target.closest('[data-deck-channel]');if(card){selectChannel(Number(card.dataset.deckChannel));if(!$('.broadcast').classList.contains('scroll-story'))$('#playground').scrollIntoView({behavior:canMove()?'smooth':'instant'});}});
  deck.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const cards=[...deck.querySelectorAll('button')],current=cards.indexOf(document.activeElement),next=Math.max(0,Math.min(cards.length-1,current+(e.key==='ArrowRight'?1:-1)));cards[next].focus({preventScroll:true});cards[next].scrollIntoView({behavior:canMove()?'smooth':'instant',block:'nearest',inline:'center'});}});
+
+ // Native document scrolling drives a sticky player; no wheel or touch scroll is cancelled.
+ const section=$('#playground'),pin=document.createElement('div');pin.className='broadcast-pin';
+ while(section.firstChild)pin.append(section.firstChild);section.append(pin);
+ const toolbar=document.createElement('div');toolbar.className='story-toolbar';toolbar.innerHTML='<label class="story-switch"><input id="scroll-projects" type="checkbox" checked><span aria-hidden="true"></span>Scroll through projects</label><span class="story-hint">SCROLL TO TUNE <b id="story-position">01 / 08</b></span><a href="#work" id="story-escape">Skip to project grid ↓</a>';pin.append(toolbar);
+ let storyEnabled=false,storyStart=0,storyStep=0,storyTravel=0,scrollFrame=null,userStory=true;
+ function measureStory(){
+  const wasInside=storyEnabled&&scrollY>=storyStart&&scrollY<storyStart+storyTravel;
+  storyEnabled=userStory&&!reduced.matches&&innerHeight>=700&&innerWidth>=350;
+  section.classList.toggle('scroll-story',storyEnabled);$('#scroll-projects').checked=storyEnabled;
+  $('#scroll-projects').disabled=reduced.matches||innerHeight<700||innerWidth<350;
+  $('.story-hint').firstChild.textContent=storyEnabled?'SCROLL TO TUNE ':'USE THE CHANNEL CONTROLS ';
+  storyStep=Math.round(Math.max(320,innerHeight*.64));storyTravel=storyStep*(projects.length-1)+storyStep*.6;
+  section.style.setProperty('--story-height',`${innerHeight+storyTravel}px`);section.style.setProperty('--stage-height',`${innerHeight}px`);
+  storyStart=section.getBoundingClientRect().top+scrollY;
+  if(wasInside&&!storyEnabled)window.scrollTo({top:storyStart,behavior:'instant'});
+ }
+ function onStoryScroll(){scrollFrame=null;if(!storyEnabled)return;const progress=scrollY-storyStart;if(progress<0||progress>storyTravel+innerHeight)return;const index=Math.max(0,Math.min(projects.length-1,Math.floor(progress/storyStep)));if(index!==active)showChannel(index);section.style.setProperty('--story-progress',String(Math.max(0,Math.min(1,progress/storyTravel))));}
+ window.addEventListener('scroll',()=>{if(scrollFrame===null)scrollFrame=requestAnimationFrame(onStoryScroll);},{passive:true});
+ storySeek=index=>{if(storyEnabled)window.scrollTo({top:storyStart+index*storyStep+1,behavior:'instant'});};
+ $('#scroll-projects').onchange=e=>{userStory=e.target.checked;measureStory();if(storyEnabled)storySeek(active);};
+ $('#story-escape').onclick=e=>{e.preventDefault();window.scrollTo({top:$('#work').getBoundingClientRect().top+scrollY-25,behavior:'instant'});$('#work').setAttribute('tabindex','-1');$('#work').focus({preventScroll:true});};
+ let resizeTimer;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(measureStory,100);});reduced.addEventListener('change',measureStory);measureStory();
+ document.fonts?.ready.then(measureStory);window.addEventListener('load',measureStory,{once:true});
 
  const projectDialog=$('#project-dialog');
  document.addEventListener('click',e=>{const trigger=e.target.closest('[data-project]');if(!trigger)return;const p=projects.find(p=>p.slug===trigger.dataset.project);if(!p)return;

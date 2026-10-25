@@ -20,3 +20,23 @@
 - Reduced-motion mode yielded `animation-name: none` on the research graphic.
 - No page JavaScript errors observed in the desktop/mobile flows. No horizontal overflow at 320px or 390px.
 - Four server test groups still pass. Updated screenshots: `project-player-desktop.png` and `project-player-mobile.png`.
+
+## Landing and scroll-player refinement
+
+- Desktop 1440 × 900: landing fits below the header with no horizontal overflow. Light/dark theme toggles and persists after reload.
+- A real wheel scroll advanced channel 1 to channel 2 while the sticky player's top remained at 0px.
+- Native scroll offsets selected each remaining channel in order. Scrolling beyond the last channel released the sticky player.
+- Skip link positioned the grid 25px from the viewport top. Scroll behavior can be disabled and re-enabled; manual selection remains synchronized with the story position.
+- Reverse scroll selected earlier channels. Reduced-motion preference removed the pinned behavior.
+- Mobile 390 × 844: pinned project content and skip/toggle controls fit inside the viewport; no horizontal overflow. At 320px the regular player remains usable without overflow.
+- Eight original project SVG icons render in the project covers, with corresponding marks in the grid and TV headers.
+- Screenshots: `landing-refined.png`, `landing-dark.png`, `landing-refined-mobile.png`, `sticky-player.png`, and `sticky-player-mobile.png`.
+
+## Guided brief, email, and chat opening
+
+- Contact email `sajjadajmal405@gmail.com` was retrieved from the connected GitHub profile for `sajjadgill720` and added to the public profile data, footer contact action, brief recipient, and knowledge assistant. Node configuration can override it; static hosting uses the profile value.
+- Guided brief: idea, project type, audience and goals; name/email validation; organization, budget/timeline preferences and notes; editable review; copy/download/email-draft actions. Email draft recipient and encoded body inspected without launching or sending mail.
+- Blank idea and malformed email correctly blocked progression. Download filename verified. Edited review text survived reload in session storage. Clear draft removed entered content.
+- Chat displayed the vortex on opening and removed the overlay after one second. Rapid close/reopen did not leave an overlay stuck. Reduced-motion mode skipped the reveal. The animation is decorative and does not imply backend connection or paid AI availability.
+- Mobile 390 × 844: no horizontal overflow in the brief. Project brief remained available from both the contact section and the chat toolbar.
+- Screenshots: `chat-vortex-open.png`, `brief-review.png`, and `brief-mobile.png`.
