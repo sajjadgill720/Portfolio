@@ -1,4 +1,4 @@
-# Sajjad Ur Rehman — Portfolio
+Portfolio
 
 A complete portfolio based on my public GitHub work, with an original cream-and-lime visual system, an animated canvas vortex, project filters, a repository archive, service accordions, and a portfolio assistant. No npm dependencies are required.
 
