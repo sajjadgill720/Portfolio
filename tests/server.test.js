@@ -1,0 +1,9 @@
+import {test,after} from 'node:test';
+import assert from 'node:assert/strict';
+import {createServer} from '../server.js';
+import {answerLocally} from '../public/knowledge.js';
+const server=createServer();await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));const base=`http://127.0.0.1:${server.address().port}`;after(()=>server.close());
+test('public files serve while secrets and traversal are inaccessible',async()=>{for(const file of ['/','/app.js','/style.css'])assert.equal((await fetch(base+file)).status,200);for(const file of ['/.env','/server.js','/%2e%2e/.env'])assert.equal((await fetch(base+file)).status,404);});
+test('chat validates input and returns grounded local project information',async()=>{const result=await fetch(base+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:'user',content:'Tell me about GymRetain'}]})});assert.equal(result.status,200);const body=await result.json();assert.match(body.text,/GymRetain/);assert.equal(body.sources[0].url,'https://github.com/sajjadgill720/GymRetain');const invalid=await fetch(base+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:'{"messages":[{"role":"system","content":"bad"}]}'});assert.equal(invalid.status,400);});
+test('cross-origin requests and malformed JSON are rejected',async()=>{assert.equal((await fetch(base+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://example.com'},body:'{}'})).status,403);assert.equal((await fetch(base+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:'{'})).status,400);});
+test('unknown facts and pricing are not invented',()=>{assert.match(answerLocally('What are your rates?').text,/aren’t published/);assert.match(answerLocally('What is your favorite sandwich?').text,/don’t have verified information/);});

@@ -1,0 +1,18 @@
+export const profile = {
+ name: 'Sajjad Ur Rehman', handle: 'sajjadgill720', role: 'Product builder & full-stack developer',
+ bio: 'I’m a computer science student and product builder turning everyday friction into useful software. I work across interfaces, backends, automation, and applied AI—with a focus on tools that help people save time and make better decisions.',
+ github: 'https://github.com/sajjadgill720',
+ skills: ['Python', 'TypeScript', 'JavaScript', 'SQL', 'Java', 'React', 'TanStack Start', 'FastAPI', 'Node.js', 'Express', 'PostgreSQL', 'Supabase', 'MongoDB', 'Docker', 'Git', 'Pandas', 'NumPy', 'scikit-learn', 'LangGraph', 'Vector search']
+};
+export const projects = [
+ {slug:'demo-automation-platform',name:'Demo Automation',category:'AI & automation',short:'Less setup. Better demos.',description:'A platform bringing knowledge uploads, voice interactions, and demo previews into one workflow for sales and product teams.',tags:['TypeScript','FastAPI','LangGraph'],theme:'demo',status:'In development'},
+ {slug:'GymRetain',name:'GymRetain',category:'Web applications',short:'Keep members moving.',description:'A multi-tenant gym platform with attendance streaks, member engagement, retention workflows, and a member portal.',tags:['TypeScript','PostgreSQL','SaaS'],theme:'gym',status:'In development'},
+ {slug:'AQI-PREDICTOR',name:'AQI Predictor',category:'Data & ML',short:'Make tomorrow clearer.',description:'Air quality forecasting for Pakistani cities, connecting data collection, feature engineering, scheduled training, and an interactive dashboard.',tags:['Python','Forecasting','Data pipelines'],theme:'aqi',status:'Independent project'},
+ {slug:'Automated-Machine-Learning-AutoML-Platform',name:'AutoML Platform',category:'Data & ML',short:'From dataset to decision.',description:'A modular tabular machine learning system for preprocessing, training, evaluation, model selection, and hyperparameter tuning.',tags:['Python','scikit-learn','FastAPI'],theme:'automl',status:'Independent project'},
+ {slug:'PSX-Halal-Screener',name:'PSX Halal Screener',category:'Data & ML',short:'Clarity in the numbers.',description:'A Streamlit tool examining Pakistan Stock Exchange equities with AAOIFI-inspired filters and portfolio zakat estimates. Educational screening guidance, not a formal ruling.',tags:['Python','Streamlit','Analytics'],theme:'psx',status:'Independent project'},
+ {slug:'Scaleable-Academic-Policy-QA',name:'Academic Policy Q&A',category:'AI & automation',short:'Find the answer. Skip the search.',description:'Retrieval over the NUST handbook using TF-IDF, SimHash, and MinHash to explore scalable academic policy question answering.',tags:['Python','Retrieval','NLP'],theme:'qa',status:'Independent project'},
+ {slug:'Giftify',name:'Giftify / Keepsake',category:'Web applications',short:'Small moments. Made tangible.',description:'A milestone-art storefront exploring customization, proof approval, and production workflows. Currently a test-mode product with sandbox payments.',tags:['Storefront','Customization','PostgreSQL'],theme:'gift',status:'Test-mode product'},
+ {slug:'AI-concentration-trap-vs-dotcom-research',name:'AI & the Dot-Com Cycle',category:'Data & ML',short:'Looking beyond the hype.',description:'Research comparing technology market cycles through valuation metrics, P/E analysis, and data visualization.',tags:['Research','Data analysis','Visualization'],theme:'research',status:'Research project'}
+];
+export const archive = ['kitty_detector','Landing-Page','sr-cinema','SR-Store','infero','calculator','Student-management-system','ATM-Management-System','Cozy-coloring-Book','TaskFlow','DietSync','kittydetector'];
+export const projectUrl = p => `${profile.github}/${p.slug}`;

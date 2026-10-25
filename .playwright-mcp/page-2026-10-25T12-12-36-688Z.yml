@@ -1,0 +1,367 @@
+- generic [active] [ref=f8e1]:
+  - link "Skip to content" [ref=f8e2] [cursor=pointer]:
+    - /url: "#main"
+  - banner [ref=f8e3]:
+    - link "Sajjad, back to top" [ref=f8e4] [cursor=pointer]:
+      - /url: "#top"
+      - text: sajjad
+      - generic [ref=f8e5]: ®
+    - navigation "Main navigation" [ref=f8e6]:
+      - link [ref=f8e7] [cursor=pointer]:
+        - /url: "#work"
+        - text: Work
+        - superscript [ref=f8e8]: "08"
+      - link "About" [ref=f8e9] [cursor=pointer]:
+        - /url: "#about"
+      - link "What I do" [ref=f8e10] [cursor=pointer]:
+        - /url: "#services"
+    - link "Let’s talk ↗" [ref=f8e11] [cursor=pointer]:
+      - /url: "#contact"
+  - main [ref=f8e12]:
+    - generic [ref=f8e13]:
+      - generic [ref=f8e14]:
+        - generic [ref=f8e15]: FULL-STACK DEVELOPMENT / AUTOMATION / APPLIED AI
+        - generic [ref=f8e16]: PORTFOLIO — 2026
+      - generic [ref=f8e17]:
+        - generic [ref=f8e18]:
+          - heading [level=1] [ref=f8e19]:
+            - text: Useful things.
+            - emphasis [ref=f8e20]: Thoughtfully
+            - text: built.
+          - paragraph [ref=f8e21]: I’m Sajjad Ur Rehman. I turn complex problems into software that makes everyday life simpler.
+          - generic [ref=f8e22]:
+            - link "Explore my work ↘" [ref=f8e23] [cursor=pointer]:
+              - /url: "#work"
+              - text: Explore my work
+              - generic [ref=f8e24]: ↘
+            - button "Ask my assistant ↗" [ref=f8e25] [cursor=pointer]
+        - generic [ref=f8e26]:
+          - generic [ref=f8e27]: A LITTLE CURIOSITY. A LOT OF POSSIBILITIES.
+          - img "Animated lime spiral vortex" [ref=f8e28]
+          - generic [ref=f8e29]:
+            - text: s
+            - generic [ref=f8e30]: ↗
+          - generic [ref=f8e31]:
+            - generic [ref=f8e32]: ALWAYS EXPLORING
+            - button "Play motion ▷" [pressed] [ref=f8e34] [cursor=pointer]
+      - generic [ref=f8e35]:
+        - generic [ref=f8e36]: PRODUCT BUILDER & CREATIVE PROBLEM SOLVER
+        - link "GITHUB ↗" [ref=f8e37] [cursor=pointer]:
+          - /url: https://github.com/sajjadgill720
+        - link "SCROLL TO EXPLORE ↓" [ref=f8e38] [cursor=pointer]:
+          - /url: "#work"
+    - generic [ref=f8e40]:
+      - text: IDEAS INTO INTERFACES
+      - generic [ref=f8e41]: ✳
+      - text: DATA INTO DECISIONS
+      - generic [ref=f8e42]: ✳
+      - text: COMPLEXITY INTO CLARITY
+      - generic [ref=f8e43]: ✳
+      - text: IDEAS INTO INTERFACES
+      - generic [ref=f8e44]: ✳
+      - text: DATA INTO DECISIONS
+      - generic [ref=f8e45]: ✳
+    - generic [ref=f8e46]:
+      - generic [ref=f8e47]:
+        - generic [ref=f8e48]:
+          - text: 01 / SELECTED WORK
+          - heading "Built with purpose." [level=2] [ref=f8e49]
+        - paragraph [ref=f8e50]: A few experiments, products, and systems.Each one starts with a real problem.
+      - generic [ref=f8e51]:
+        - group "Filter projects" [ref=f8e52]:
+          - button [pressed] [ref=f8e53] [cursor=pointer]:
+            - text: All work
+            - superscript [ref=f8e54]: "08"
+          - button "AI & automation" [ref=f8e55] [cursor=pointer]
+          - button "Web applications" [ref=f8e56] [cursor=pointer]
+          - button "Data & ML" [ref=f8e57] [cursor=pointer]
+        - generic [ref=f8e58]: 08 PROJECTS
+      - generic [ref=f8e59]:
+        - article [ref=f8e60]:
+          - link "Explore Demo Automation source on GitHub" [ref=f8e61] [cursor=pointer]:
+            - /url: https://github.com/sajjadgill720/demo-automation-platform
+            - generic [ref=f8e62]:
+              - generic [ref=f8e63]:
+                - generic [ref=f8e64]: 01 / AI & AUTOMATION
+                - generic [ref=f8e65]: IN DEVELOPMENT
+              - generic [ref=f8e66]:
+                - generic [ref=f8e67]: demo automation / concept
+                - strong [ref=f8e72]: Your next demo. Ready.
+                - generic [ref=f8e73]: ONE WORKFLOW. EVERY STEP.
+                - generic [ref=f8e74]:
+                  - generic [ref=f8e75]: Knowledge
+                  - generic [ref=f8e76]: →
+                  - generic [ref=f8e77]: Orchestrate
+                  - generic [ref=f8e78]: →
+                  - generic [ref=f8e79]: Demo
+                - generic [ref=f8e80]: UPLOAD · UNDERSTAND · BUILD
+              - generic [ref=f8e81]: ↗
+            - generic [ref=f8e82]:
+              - heading "Demo Automation" [level=3] [ref=f8e83]
+              - generic [ref=f8e84]: EXPLORE PROJECT ↗
+          - paragraph [ref=f8e85]: A platform bringing knowledge uploads, voice interactions, and demo previews into one workflow for sales and product teams.
+          - generic [ref=f8e86]:
+            - generic [ref=f8e87]: TypeScript
+            - generic [ref=f8e88]: FastAPI
+            - generic [ref=f8e89]: LangGraph
+        - article [ref=f8e90]:
+          - link "Explore GymRetain source on GitHub" [ref=f8e91] [cursor=pointer]:
+            - /url: https://github.com/sajjadgill720/GymRetain
+            - generic [ref=f8e92]:
+              - generic [ref=f8e93]:
+                - generic [ref=f8e94]: 02 / WEB APPLICATIONS
+                - generic [ref=f8e95]: IN DEVELOPMENT
+              - generic [ref=f8e96]:
+                - generic [ref=f8e97]: gymretain / concept
+                - strong [ref=f8e102]: Small habits. Stronger members.
+                - generic [ref=f8e103]:
+                  - generic [ref=f8e104]:
+                    - generic [ref=f8e105]: ↗
+                    - text: ENGAGEMENT
+                  - generic [ref=f8e106]:
+                    - generic [ref=f8e107]: ✳
+                    - text: RETENTION
+                  - generic [ref=f8e108]:
+                    - generic [ref=f8e109]: ✓
+                    - text: CHECK-INS
+              - generic [ref=f8e114]: ↗
+            - generic [ref=f8e115]:
+              - heading "GymRetain" [level=3] [ref=f8e116]
+              - generic [ref=f8e117]: EXPLORE PROJECT ↗
+          - paragraph [ref=f8e118]: A multi-tenant gym platform with attendance streaks, member engagement, retention workflows, and a member portal.
+          - generic [ref=f8e119]:
+            - generic [ref=f8e120]: TypeScript
+            - generic [ref=f8e121]: PostgreSQL
+            - generic [ref=f8e122]: SaaS
+        - article [ref=f8e123]:
+          - link "Explore AQI Predictor source on GitHub" [ref=f8e124] [cursor=pointer]:
+            - /url: https://github.com/sajjadgill720/AQI-PREDICTOR
+            - generic [ref=f8e125]:
+              - generic [ref=f8e126]:
+                - generic [ref=f8e127]: 03 / DATA & ML
+                - generic [ref=f8e128]: INDEPENDENT PROJECT
+              - generic [ref=f8e129]:
+                - generic [ref=f8e130]: aqi predictor / concept
+                - generic [ref=f8e135]: AIR QUALITY / FORECAST EXPLORER
+                - strong [ref=f8e136]: A clearer view ahead.
+                - generic [ref=f8e141]: COLLECT → TRAIN → FORECAST
+              - generic [ref=f8e142]: ↗
+            - generic [ref=f8e143]:
+              - heading "AQI Predictor" [level=3] [ref=f8e144]
+              - generic [ref=f8e145]: EXPLORE PROJECT ↗
+          - paragraph [ref=f8e146]: Air quality forecasting for Pakistani cities, connecting data collection, feature engineering, scheduled training, and an interactive dashboard.
+          - generic [ref=f8e147]:
+            - generic [ref=f8e148]: Python
+            - generic [ref=f8e149]: Forecasting
+            - generic [ref=f8e150]: Data pipelines
+        - article [ref=f8e151]:
+          - link "Explore AutoML Platform source on GitHub" [ref=f8e152] [cursor=pointer]:
+            - /url: https://github.com/sajjadgill720/Automated-Machine-Learning-AutoML-Platform
+            - generic [ref=f8e153]:
+              - generic [ref=f8e154]:
+                - generic [ref=f8e155]: 04 / DATA & ML
+                - generic [ref=f8e156]: INDEPENDENT PROJECT
+              - generic [ref=f8e157]:
+                - generic [ref=f8e158]: automl platform / concept
+                - strong [ref=f8e163]: Good models. Less guesswork.
+                - generic [ref=f8e164]:
+                  - generic [ref=f8e165]: Dataset
+                  - generic [ref=f8e166]: →
+                  - generic [ref=f8e167]: Train & tune
+                  - generic [ref=f8e168]: →
+                  - generic [ref=f8e169]: Evaluate
+                - generic [ref=f8e170]:
+                  - generic [ref=f8e171]: PREPROCESSING
+                  - generic [ref=f8e172]: SELECTION
+                  - generic [ref=f8e173]: PERSISTENCE
+              - generic [ref=f8e174]: ↗
+            - generic [ref=f8e175]:
+              - heading "AutoML Platform" [level=3] [ref=f8e176]
+              - generic [ref=f8e177]: EXPLORE PROJECT ↗
+          - paragraph [ref=f8e178]: A modular tabular machine learning system for preprocessing, training, evaluation, model selection, and hyperparameter tuning.
+          - generic [ref=f8e179]:
+            - generic [ref=f8e180]: Python
+            - generic [ref=f8e181]: scikit-learn
+            - generic [ref=f8e182]: FastAPI
+        - article [ref=f8e183]:
+          - link "Explore PSX Halal Screener source on GitHub" [ref=f8e184] [cursor=pointer]:
+            - /url: https://github.com/sajjadgill720/PSX-Halal-Screener
+            - generic [ref=f8e185]:
+              - generic [ref=f8e186]:
+                - generic [ref=f8e187]: 05 / DATA & ML
+                - generic [ref=f8e188]: INDEPENDENT PROJECT
+              - generic [ref=f8e189]:
+                - generic [ref=f8e190]: psx halal screener / concept
+                - generic [ref=f8e195]: PAKISTAN STOCK EXCHANGE
+                - strong [ref=f8e196]: A more considered portfolio.
+                - generic [ref=f8e197]:
+                  - generic [ref=f8e198]:
+                    - generic [ref=f8e199]: "01"
+                    - text: BUSINESS
+                  - generic [ref=f8e200]:
+                    - generic [ref=f8e201]: "02"
+                    - text: RATIOS
+                  - generic [ref=f8e202]:
+                    - generic [ref=f8e203]: "03"
+                    - text: REVIEW
+              - generic [ref=f8e208]: ↗
+            - generic [ref=f8e209]:
+              - heading "PSX Halal Screener" [level=3] [ref=f8e210]
+              - generic [ref=f8e211]: EXPLORE PROJECT ↗
+          - paragraph [ref=f8e212]: A Streamlit tool examining Pakistan Stock Exchange equities with AAOIFI-inspired filters and portfolio zakat estimates. Educational screening guidance, not a formal ruling.
+          - generic [ref=f8e213]:
+            - generic [ref=f8e214]: Python
+            - generic [ref=f8e215]: Streamlit
+            - generic [ref=f8e216]: Analytics
+        - article [ref=f8e217]:
+          - link "Explore Academic Policy Q&A source on GitHub" [ref=f8e218] [cursor=pointer]:
+            - /url: https://github.com/sajjadgill720/Scaleable-Academic-Policy-QA
+            - generic [ref=f8e219]:
+              - generic [ref=f8e220]:
+                - generic [ref=f8e221]: 06 / AI & AUTOMATION
+                - generic [ref=f8e222]: INDEPENDENT PROJECT
+              - generic [ref=f8e223]:
+                - generic [ref=f8e224]: academic policy q&a / concept
+                - strong [ref=f8e229]: The handbook, made searchable.
+                - generic [ref=f8e230]: Ask a policy question ↗
+                - generic [ref=f8e234]: TF-IDF · SIMHASH · MINHASH
+              - generic [ref=f8e235]: ↗
+            - generic [ref=f8e236]:
+              - heading "Academic Policy Q&A" [level=3] [ref=f8e237]
+              - generic [ref=f8e238]: EXPLORE PROJECT ↗
+          - paragraph [ref=f8e239]: Retrieval over the NUST handbook using TF-IDF, SimHash, and MinHash to explore scalable academic policy question answering.
+          - generic [ref=f8e240]:
+            - generic [ref=f8e241]: Python
+            - generic [ref=f8e242]: Retrieval
+            - generic [ref=f8e243]: NLP
+        - article [ref=f8e244]:
+          - link "Explore Giftify / Keepsake source on GitHub" [ref=f8e245] [cursor=pointer]:
+            - /url: https://github.com/sajjadgill720/Giftify
+            - generic [ref=f8e246]:
+              - generic [ref=f8e247]:
+                - generic [ref=f8e248]: 07 / WEB APPLICATIONS
+                - generic [ref=f8e249]: TEST-MODE PRODUCT
+              - generic [ref=f8e250]:
+                - text: The momentswe keep.
+                - generic [ref=f8e252]: KEEPSAKE / ARTWORK CONCEPT
+              - generic [ref=f8e253]: ↗
+            - generic [ref=f8e254]:
+              - heading "Giftify / Keepsake" [level=3] [ref=f8e255]
+              - generic [ref=f8e256]: EXPLORE PROJECT ↗
+          - paragraph [ref=f8e257]: A milestone-art storefront exploring customization, proof approval, and production workflows. Currently a test-mode product with sandbox payments.
+          - generic [ref=f8e258]:
+            - generic [ref=f8e259]: Storefront
+            - generic [ref=f8e260]: Customization
+            - generic [ref=f8e261]: PostgreSQL
+        - article [ref=f8e262]:
+          - link "Explore AI & the Dot-Com Cycle source on GitHub" [ref=f8e263] [cursor=pointer]:
+            - /url: https://github.com/sajjadgill720/AI-concentration-trap-vs-dotcom-research
+            - generic [ref=f8e264]:
+              - generic [ref=f8e265]:
+                - generic [ref=f8e266]: 08 / DATA & ML
+                - generic [ref=f8e267]: RESEARCH PROJECT
+              - generic [ref=f8e268]:
+                - generic [ref=f8e269]: ai & the dot-com cycle / concept
+                - generic [ref=f8e274]: RESEARCH / TECHNOLOGY MARKET CYCLES
+                - strong [ref=f8e275]: A familiar kind of future?
+                - generic [ref=f8e280]: VALUATION · CONCENTRATION · CONTEXT
+              - generic [ref=f8e281]: ↗
+            - generic [ref=f8e282]:
+              - heading "AI & the Dot-Com Cycle" [level=3] [ref=f8e283]
+              - generic [ref=f8e284]: EXPLORE PROJECT ↗
+          - paragraph [ref=f8e285]: Research comparing technology market cycles through valuation metrics, P/E analysis, and data visualization.
+          - generic [ref=f8e286]:
+            - generic [ref=f8e287]: Research
+            - generic [ref=f8e288]: Data analysis
+            - generic [ref=f8e289]: Visualization
+      - group [ref=f8e290]:
+        - generic "More from the workbench 12 repositories ↗" [ref=f8e291] [cursor=pointer]:
+          - text: More from the workbench
+          - generic [ref=f8e292]: 12 repositories ↗
+      - paragraph [ref=f8e293]: Concept visuals above illustrate each project. Explore the repositories for implementation and current status.
+    - generic [ref=f8e294]:
+      - generic [ref=f8e295]:
+        - text: 02 / THE PERSON BEHIND THE CODE
+        - generic [ref=f8e296]: SR
+        - text: CURIOUS BY DEFAULT. BUILDER BY CHOICE.
+      - generic [ref=f8e299]:
+        - heading [level=2] [ref=f8e300]:
+          - text: Big on curiosity.
+          - emphasis [ref=f8e301]: Bigger on making it work.
+        - paragraph [ref=f8e302]: I’m Sajjad, a computer science student and product builder. I enjoy connecting the dots between thoughtful design, dependable engineering, and problems worth solving.
+        - paragraph [ref=f8e303]: "From forecasting air quality to automating product demos, my work spans the whole product: understanding the need, building the interface and backend, and improving through feedback."
+        - generic [ref=f8e304]:
+          - text: ON MY WORKBENCH ↗
+          - paragraph [ref=f8e305]: Knovera — exploring personalized learning for children, with learning activities, progress signals, and parent insights.
+        - link "More about me on GitHub ↗" [ref=f8e306] [cursor=pointer]:
+          - /url: https://github.com/sajjadgill720/sajjadgill720
+    - generic [ref=f8e307]:
+      - generic [ref=f8e308]:
+        - generic [ref=f8e309]:
+          - text: 03 / WHAT I BRING TO THE TABLE
+          - heading "From the first “what if” to the thing that works." [level=2] [ref=f8e310]: From the first “what if”to the thing that works.
+        - generic [aria-hidden] [ref=f8e311]: ✳
+      - group [ref=f8e312]:
+        - generic "01 Full-stack development +" [ref=f8e313] [cursor=pointer]:
+          - generic [ref=f8e314]: "01"
+          - text: Full-stack development
+          - generic [ref=f8e315]: +
+        - paragraph [ref=f8e316]: Responsive interfaces, dependable APIs, and connected data. Bringing frontend and backend together into a coherent product experience.
+      - group [ref=f8e317]:
+        - generic "02 AI & workflow automation +" [ref=f8e318] [cursor=pointer]:
+          - generic [ref=f8e319]: "02"
+          - text: AI & workflow automation
+          - generic [ref=f8e320]: +
+      - group [ref=f8e321]:
+        - generic "03 Data & machine learning +" [ref=f8e322] [cursor=pointer]:
+          - generic [ref=f8e323]: "03"
+          - text: Data & machine learning
+          - generic [ref=f8e324]: +
+    - generic [ref=f8e325]:
+      - text: 04 / MY EVERYDAY TOOLKIT
+      - generic [ref=f8e326]:
+        - generic [ref=f8e327]: Python
+        - generic [ref=f8e328]: TypeScript
+        - generic [ref=f8e329]: JavaScript
+        - generic [ref=f8e330]: SQL
+        - generic [ref=f8e331]: Java
+        - generic [ref=f8e332]: React
+        - generic [ref=f8e333]: TanStack Start
+        - generic [ref=f8e334]: FastAPI
+        - generic [ref=f8e335]: Node.js
+        - generic [ref=f8e336]: Express
+        - generic [ref=f8e337]: PostgreSQL
+        - generic [ref=f8e338]: Supabase
+        - generic [ref=f8e339]: MongoDB
+        - generic [ref=f8e340]: Docker
+        - generic [ref=f8e341]: Git
+        - generic [ref=f8e342]: Pandas
+        - generic [ref=f8e343]: NumPy
+        - generic [ref=f8e344]: scikit-learn
+        - generic [ref=f8e345]: LangGraph
+        - generic [ref=f8e346]: Vector search
+    - generic [ref=f8e347]:
+      - text: HAVE SOMETHING IN MIND?
+      - heading "Let’s make something useful. ↗" [level=2] [ref=f8e348]:
+        - text: Let’s make
+        - emphasis [ref=f8e349]: something useful.
+        - generic [ref=f8e350]: ↗
+      - generic [ref=f8e351]:
+        - paragraph [ref=f8e352]: A product idea, a tricky workflow, or a new opportunity.I’d love to hear what you’re thinking.
+        - generic [ref=f8e353]:
+          - button "Start a project brief ↗" [ref=f8e354] [cursor=pointer]:
+            - text: Start a project brief
+            - generic [ref=f8e355]: ↗
+          - link "Connect on GitHub ↗" [ref=f8e356] [cursor=pointer]:
+            - /url: https://github.com/sajjadgill720
+  - contentinfo [ref=f8e357]:
+    - link "sajjad ®" [ref=f8e358] [cursor=pointer]:
+      - /url: "#top"
+      - text: sajjad
+      - generic [ref=f8e359]: ®
+    - generic [ref=f8e360]: © 2026 SAJJAD UR REHMAN
+    - link "BACK TO TOP ↑" [ref=f8e361] [cursor=pointer]:
+      - /url: "#top"
+  - button "Open portfolio assistant" [ref=f8e362] [cursor=pointer]:
+    - text: Ask about my work
+    - generic [ref=f8e383]: ↗
