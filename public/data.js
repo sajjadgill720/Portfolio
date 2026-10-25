@@ -1,7 +1,7 @@
 export const profile = {
- name: 'Sajjad Ur Rehman', handle: 'sajjadgill720', role: 'Product builder & full-stack developer',
+ name: 'SR', handle: 'sajjadgill720', role: 'Product builder & full-stack developer',
  bio: 'I’m a computer science student and product builder turning everyday friction into useful software. I work across interfaces, backends, automation, and applied AI—with a focus on tools that help people save time and make better decisions.',
- github: 'https://github.com/sajjadgill720', email: 'sajjadajmal405@gmail.com',
+ github: 'https://github.com/sajjadgill720', email: 'self.starter.sr@gmail.com',
  skills: ['Python', 'TypeScript', 'JavaScript', 'SQL', 'Java', 'React', 'TanStack Start', 'FastAPI', 'Node.js', 'Express', 'PostgreSQL', 'Supabase', 'MongoDB', 'Docker', 'Git', 'Pandas', 'NumPy', 'scikit-learn', 'LangGraph', 'Vector search']
 };
 export const projects = [

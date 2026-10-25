@@ -19,9 +19,8 @@ export function initMotion({projects,projectUrl,escape,concept,openChat,send}){
   active=(index+projects.length)%projects.length;const p=projects[active],n=String(active+1).padStart(2,'0');
   $('#broadcast-copy').innerHTML=`<span class="channel-kicker"><b>CH ${n}</b> ${escape(p.category.toUpperCase())}</span><h3>${escape(p.name)}</h3><p class="channel-short">${escape(p.short)}</p><p>${escape(p.description)}</p><ul class="channel-stack">${p.tags.map(t=>`<li>${escape(t)}</li>`).join('')}</ul><span class="channel-status">${escape(p.status)} · source available on GitHub</span><div class="channel-actions"><a class="button dark" href="${projectUrl(p)}" target="_blank" rel="noreferrer">Explore source <span>↗</span></a><button class="text-button" data-project="${p.slug}">Project notes ↗</button></div>`;
   $('#signal-art').innerHTML=art[p.theme];$('#tv-screen').className='tv-screen screen-'+p.theme;$('#screen-channel').innerHTML=icon(p.theme)+`<span>CH ${n} / ${escape(p.name.toUpperCase())}</span>`;$('#screen-title').textContent=p.short;$('#on-air-label').textContent=`ON AIR · CH ${n}`;$('#channel-dial').value=active;
-  if(p.theme==='demo')document.querySelectorAll('.signal-node>i').forEach((el,i)=>el.innerHTML=icon(['qa','automl','demo'][i]));
+  if(p.theme==='demo')$('#signal-art').querySelectorAll('.signal-node>i').forEach((el,i)=>el.innerHTML=icon(['qa','automl','demo'][i]));
   if($('#story-position'))$('#story-position').textContent=`${n} / 08`;
-  if($('#story-escape'))$('#story-escape').textContent=active===projects.length-1?'Continue down ↓':'Skip to project grid ↓';
   document.querySelectorAll('[data-channel]').forEach((b,i)=>{b.setAttribute('aria-pressed',String(i===active));b.classList.toggle('active',i===active);});
   $('.channel-knob').style.setProperty('--dial-angle',`${active*36-125}deg`);
   if(animate&&canMove()){
@@ -39,25 +38,31 @@ export function initMotion({projects,projectUrl,escape,concept,openChat,send}){
 
  // The fan scrolls natively on touch and with a pointer drag on desktop.
  const deck=$('#deck-track');
- deck.innerHTML=projects.map((p,i)=>`<button class="deck-card deck-${p.theme}" data-deck-channel="${i}" style="--card-angle:${[-11,-6,-2,5,10,4,-6,-10][i]}deg;--float-delay:${i*-.6}s" aria-label="Tune in to ${escape(p.name)}"><span class="deck-top">CH ${String(i+1).padStart(2,'0')}<span>${escape(p.category.split(' ')[0].toUpperCase())}</span></span><span class="deck-graphic" aria-hidden="true">${icon(p.theme)}</span><span class="deck-name">${escape(p.name)}</span><span class="deck-bottom">${escape(p.tags[0])}<span>↗</span></span></button>`).join('');
+ deck.innerHTML=projects.map((p,i)=>`<button class="deck-card deck-${p.theme}" data-deck-channel="${i}" style="--card-angle:${[-11,-6,-2,5,10,4,-6,-10][i]}deg;--float-delay:${i*-.6}s" aria-label="Preview ${escape(p.name)}; activate to watch on TV" aria-expanded="false"><span class="book-page" aria-hidden="true"><span class="book-page-heading">CH ${String(i+1).padStart(2,'0')} / MOTION PREVIEW</span><span class="book-screen screen-${p.theme}"><span class="book-signal">${art[p.theme]}</span><span class="scanlines"></span></span><span class="book-page-title">${escape(p.short)}</span><span class="book-watch">WATCH ON THE TV ↗</span></span><span class="book-cover"><span class="book-front"><span class="deck-top">CH ${String(i+1).padStart(2,'0')}<span>${escape(p.category.split(' ')[0].toUpperCase())}</span></span><span class="deck-graphic" aria-hidden="true">${icon(p.theme)}</span><span class="deck-name">${escape(p.name)}</span><span class="deck-bottom">${escape(p.tags[0])}<span>↗</span></span></span><span class="book-back" aria-hidden="true"><span class="book-back-mark">${icon(p.theme)}</span><span class="book-back-title">${escape(p.name)}</span><span class="book-back-copy">${escape(p.description)}</span><span class="book-back-foot">${escape(p.tags.slice(0,2).join(' / '))}</span></span></span></button>`).join('');
+ const cards=[...deck.querySelectorAll('.deck-card')];
+ function openBook(card){cards.forEach(other=>{const open=other===card;other.classList.toggle('book-open',open);other.setAttribute('aria-expanded',String(open));});}
+ cards.forEach(card=>{card.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch'&&!drag)openBook(card);});card.addEventListener('pointerleave',e=>{if(e.pointerType!=='touch'&&document.activeElement!==card)openBook(null);});card.addEventListener('focus',()=>openBook(card));card.addEventListener('blur',()=>{if(!card.matches(':hover'))openBook(null);});});
+ $('.deck-caption>span:last-child').textContent=matchMedia('(hover:hover)').matches?'HOVER TO OPEN · DRAG TO EXPLORE ↔':'TAP TO OPEN · TAP AGAIN TO WATCH ↗';
+
  let drag=null,ignoreClick=false;
  deck.addEventListener('pointerdown',e=>{if(e.pointerType==='touch'||e.button!==0)return;drag={x:e.clientX,scroll:deck.scrollLeft,moved:false};});
  deck.addEventListener('pointermove',e=>{if(!drag)return;const distance=e.clientX-drag.x;if(Math.abs(distance)>6){drag.moved=true;deck.classList.add('is-dragging');deck.setPointerCapture(e.pointerId);deck.scrollLeft=drag.scroll-distance;}});
  function endDrag(){if(!drag)return;ignoreClick=drag.moved;drag=null;deck.classList.remove('is-dragging');setTimeout(()=>ignoreClick=false,0);}
  deck.addEventListener('pointerup',endDrag);deck.addEventListener('pointercancel',endDrag);deck.addEventListener('lostpointercapture',endDrag);
- deck.addEventListener('click',e=>{if(ignoreClick){e.preventDefault();return;}const card=e.target.closest('[data-deck-channel]');if(card){selectChannel(Number(card.dataset.deckChannel));if(!$('.broadcast').classList.contains('scroll-story'))$('#playground').scrollIntoView({behavior:canMove()?'smooth':'instant'});}});
- deck.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const cards=[...deck.querySelectorAll('button')],current=cards.indexOf(document.activeElement),next=Math.max(0,Math.min(cards.length-1,current+(e.key==='ArrowRight'?1:-1)));cards[next].focus({preventScroll:true});cards[next].scrollIntoView({behavior:canMove()?'smooth':'instant',block:'nearest',inline:'center'});}});
+ deck.addEventListener('click',e=>{if(ignoreClick){e.preventDefault();return;}const card=e.target.closest('[data-deck-channel]');if(card){if(e.pointerType==='touch'&&card.dataset.touchReady!=='true'){cards.forEach(c=>delete c.dataset.touchReady);card.dataset.touchReady='true';openBook(card);card.scrollIntoView({behavior:canMove()?'smooth':'instant',block:'nearest',inline:'center'});return;}selectChannel(Number(card.dataset.deckChannel));if(!$('.broadcast').classList.contains('scroll-story'))$('#playground').scrollIntoView({behavior:canMove()?'smooth':'instant'});}});
+ deck.addEventListener('keydown',e=>{if(e.key==='Escape'){openBook(null);cards.forEach(c=>delete c.dataset.touchReady);return;}if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();const current=cards.indexOf(document.activeElement),next=Math.max(0,Math.min(cards.length-1,current+(e.key==='ArrowRight'?1:-1)));cards[next].focus({preventScroll:true});cards[next].scrollIntoView({behavior:canMove()?'smooth':'instant',block:'nearest',inline:'center'});}});
 
  // Native document scrolling drives a sticky player; no wheel or touch scroll is cancelled.
  const section=$('#playground'),pin=document.createElement('div');pin.className='broadcast-pin';
  while(section.firstChild)pin.append(section.firstChild);section.append(pin);
- const toolbar=document.createElement('div');toolbar.className='story-toolbar';toolbar.innerHTML='<label class="story-switch"><input id="scroll-projects" type="checkbox" checked><span aria-hidden="true"></span>Scroll through projects</label><span class="story-hint">SCROLL TO TUNE <b id="story-position">01 / 08</b></span><a href="#work" id="story-escape">Skip to project grid ↓</a>';pin.append(toolbar);
- let storyEnabled=false,storyStart=0,storyStep=0,storyTravel=0,scrollFrame=null,userStory=true;
+ const toolbar=document.createElement('div');toolbar.className='story-toolbar';toolbar.innerHTML='<span class="story-scroll-label">Scroll to the next project ↓</span><span class="story-hint">SCROLL TO TUNE <b id="story-position">01 / 08</b></span><a href="#signal-lab" id="story-escape" class="story-continue">Continue below ↓</a>';pin.append(toolbar);
+ $('.tv-signature').insertAdjacentHTML('beforebegin','<button class="tv-skip" aria-label="Skip the TV projects and continue below">↓<span>SKIP TV</span></button>');
+ let storyEnabled=false,storyStart=0,storyStep=0,storyTravel=0,scrollFrame=null;
+
  function measureStory(){
   const wasInside=storyEnabled&&scrollY>=storyStart&&scrollY<storyStart+storyTravel;
-  storyEnabled=userStory&&!reduced.matches&&innerHeight>=700&&innerWidth>=350;
-  section.classList.toggle('scroll-story',storyEnabled);$('#scroll-projects').checked=storyEnabled;
-  $('#scroll-projects').disabled=reduced.matches||innerHeight<700||innerWidth<350;
+  storyEnabled=innerHeight>=700&&innerWidth>=350;
+  section.classList.toggle('scroll-story',storyEnabled);
   $('.story-hint').firstChild.textContent=storyEnabled?'SCROLL TO TUNE ':'USE THE CHANNEL CONTROLS ';
   storyStep=Math.round(Math.max(320,innerHeight*.64));storyTravel=storyStep*(projects.length-1)+storyStep*.6;
   section.style.setProperty('--story-height',`${innerHeight+storyTravel}px`);section.style.setProperty('--stage-height',`${innerHeight}px`);
@@ -67,8 +72,8 @@ export function initMotion({projects,projectUrl,escape,concept,openChat,send}){
  function onStoryScroll(){scrollFrame=null;if(!storyEnabled)return;const progress=scrollY-storyStart;if(progress<0||progress>storyTravel+innerHeight)return;const index=Math.max(0,Math.min(projects.length-1,Math.floor(progress/storyStep)));if(index!==active)showChannel(index);section.style.setProperty('--story-progress',String(Math.max(0,Math.min(1,progress/storyTravel))));}
  window.addEventListener('scroll',()=>{if(scrollFrame===null)scrollFrame=requestAnimationFrame(onStoryScroll);},{passive:true});
  storySeek=index=>{if(storyEnabled)window.scrollTo({top:storyStart+index*storyStep+1,behavior:'instant'});};
- $('#scroll-projects').onchange=e=>{userStory=e.target.checked;measureStory();if(storyEnabled)storySeek(active);};
- $('#story-escape').onclick=e=>{e.preventDefault();window.scrollTo({top:$('#work').getBoundingClientRect().top+scrollY-25,behavior:'instant'});$('#work').setAttribute('tabindex','-1');$('#work').focus({preventScroll:true});};
+ function skipTV(e){e.preventDefault();window.scrollTo({top:$('#signal-lab').getBoundingClientRect().top+scrollY-25,behavior:'instant'});$('#signal-lab').setAttribute('tabindex','-1');$('#signal-lab').focus({preventScroll:true});}
+ $('#story-escape').onclick=skipTV;$('.tv-skip').onclick=skipTV;
  let resizeTimer;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(measureStory,100);});reduced.addEventListener('change',measureStory);measureStory();
  document.fonts?.ready.then(measureStory);window.addEventListener('load',measureStory,{once:true});
 
