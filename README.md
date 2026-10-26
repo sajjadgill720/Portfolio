@@ -4,7 +4,7 @@ A complete portfolio based on my public GitHub work, with an original cream-and-
 
 ## Run it
 
-Requires Node.js 22.6 or later (tested with 24.22).
+Requires Node.js 24.x (tested with 24.22). The major version is pinned for reproducible Vercel builds.
 
 ```powershell
 cd E:\Portfolio
@@ -18,7 +18,7 @@ Open http://localhost:3000. The development server also serves the production ap
 1. Review the name, bio, skills, project descriptions, and project status in `public/data.js`. Eight documented projects are featured; the remaining twelve public project repositories are linked in the archive. No employment history or qualifications have been invented.
 2. Your contact email is configured as `self.starter.sr@gmail.com`, supplied by you. To override it on the Node server, set `CONTACT_EMAIL` in `.env`; for static hosting, edit `profile.email` in `public/data.js`. A photo, LinkedIn, CV, and custom domain can be added later.
 3. To enable AI conversations, put `OPENAI_API_KEY` and an available Responses API model ID in `OPENAI_MODEL` in `.env`, then restart. Use an API account with billing enabled. Keep the key on the server and never put `.env` in a repository. No paid API call has been tested without your credentials.
-4. Deploy either the whole project to a Node-capable host using `npm start`, or run `npm run build` and publish the contents of `dist` to static hosting. The Node version supports AI. Static hosting, including GitHub Pages, supports the built-in knowledge assistant and brief builder, but cannot run the AI endpoint. Serve static files over HTTP(S), rather than double-clicking the HTML file.
+4. For Vercel, import the repository with Root Directory set to the repository root, Framework Preset **Other**, Build Command `npm run build`, and Output Directory `dist`. The checked-in `vercel.json` explicitly disables framework detection and configures the static output plus the `api/` functions. Set AI environment variables in the Vercel project settings and redeploy. Alternatively, use `npm start` on a Node host, or publish `dist` alone on static hosting. Static-only hosts support the built-in knowledge assistant and brief builder but cannot run the AI endpoint. Serve files over HTTP(S).
 5. After deployment, switch a TV channel, ask the assistant about GymRetain, download a project brief, and test your contact link on a phone. If using AI, verify a real response and set provider usage limits before sharing publicly.
 
 ## Chat features
@@ -58,9 +58,9 @@ Tests exercise the actual HTTP server: public asset serving, private-file denial
 
 ## Editing
 
-`public/index.html`: page structure and copy. `public/style.css`: visual system and responsive layouts. `public/data.js`: profile, featured projects, skills, and archive. `public/knowledge.js`: local assistant. `public/app.js`: interactions, vortex, chat, brief builder. `dev-server.js`: local static hosting and AI endpoint.
+`public/index.html`: page structure and copy. `public/style.css`: base visual system and responsive layouts. `public/data.js`: profile, featured projects, skills, and archive. `public/knowledge.js`: local assistant. `public/portfolio.js`: browser entrypoint. Feature modules handle motion, studio, hero, signal experiment, contact portal, and the project brief. `api/`: shared config/chat handlers used by Vercel and `dev-server.js`.
 
-This workspace was empty and has no Git remote. Nothing has been pushed or published.
+The Git remote is `sajjadgill720/Portfolio`. Build output (`dist/`), local Vercel output (`.vercel/`), and credentials are ignored by Git. Design screenshots and review notes in `docs/` are retained as development evidence and excluded from Vercel uploads by `.vercelignore`.
 
 
 The hero vortex responds to pointer movement and tap ripples. Capability cards jump directly to relevant TV channels, and the central monogram opens the assistant. The animation respects the global pause control, reduced motion, and offscreen visibility. `public/hero-vortex.js` owns the Canvas interaction; `public/polish.css` supplies final interaction states.

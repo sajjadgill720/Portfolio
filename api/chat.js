@@ -18,18 +18,33 @@ export default async function handler(req, res) {
   if (req.headers.origin && req.headers.origin !== `http://${req.headers.host}` && req.headers.origin !== `https://${req.headers.host}`) {
     return res.status(403).json({error: 'Origin not allowed'});
   }
+  if (!req.headers['content-type']?.startsWith('application/json')) {
+    return res.status(415).json({error: 'Expected JSON'});
+  }
 
   // Rate limiting
   const now = Date.now();
-  const key = req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'client';
+  // Only trust forwarded addresses on Vercel's managed proxy.
+  const key = (process.env.VERCEL && req.headers['x-forwarded-for']) || req.socket?.remoteAddress || 'client';
   for (const [ip, value] of limits) if (now - value.time > 60000) limits.delete(ip);
   const limit = limits.get(key) || {time: now, count: 0};
   if (++limit.count > 20) return res.status(429).json({error: 'Please wait a minute'});
   limits.set(key, limit);
 
-  const data = typeof req.body === 'object' && req.body !== null ? req.body : JSON.parse(req.body || '{}');
+  let data;
+  try {
+    if (typeof req.body === 'string' && Buffer.byteLength(req.body) > 24000) {
+      return res.status(413).json({error: 'Request too large'});
+    }
+    data = typeof req.body === 'object' && req.body !== null ? req.body : JSON.parse(req.body || '{}');
+    if (Buffer.byteLength(JSON.stringify(data)) > 24000) {
+      return res.status(413).json({error: 'Request too large'});
+    }
+  } catch {
+    return res.status(400).json({error: 'Invalid JSON'});
+  }
 
-  if (!Array.isArray(data.messages) || !data.messages.length || data.messages.length > 12 ||
+  if (!data || !Array.isArray(data.messages) || !data.messages.length || data.messages.length > 12 ||
       data.messages.some(m => !m || !['user', 'assistant'].includes(m.role) || typeof m.content !== 'string' || m.content.length > 6000) ||
       data.messages.at(-1).role !== 'user' || data.messages.at(-1).content.trim().length < 1 ||
       data.messages.at(-1).content.length > 1500) {

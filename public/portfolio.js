@@ -5,7 +5,7 @@ import {icon} from './icons.js';
 import {initStudio} from './studio.js';
 import {initHeroVortex} from './hero-vortex.js';
 import {initSignalLab} from './signal-lab.js';
-import {initBrief} from './brief.js';
+import {initBrief} from './brief-experience.js';
 import {revealVortex,initContactPortal} from './portal.js';
 
 if (typeof document !== 'undefined') {
