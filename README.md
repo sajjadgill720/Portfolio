@@ -1,65 +1,107 @@
-Portfolio
+# devxsol — Interactive Portfolio & Studio
 
-A complete portfolio based on my public GitHub work, with an original cream-and-lime visual system, an animated canvas vortex, project filters, a repository archive, service accordions, and a portfolio assistant. No npm dependencies are required.
+A modern, high-performance portfolio and developer experience platform featuring procedural 3D particle animations, interactive project showcases, automated workflow diagrams, and a conversational assistant. Built with zero runtime frontend framework overhead using standard Web APIs, Canvas 2D, SVG, and CSS.
 
-## Run it
+---
 
-Requires Node.js 24.x (tested with 24.22). The major version is pinned for reproducible Vercel builds.
+## ✨ Features
 
-```powershell
-\Portfolio
+- **Procedural 3D Golden Sculpture**: Interactive 3D particle sculpture that morphs continuously between geometry modes (*The knot*, *The orbit*, *Scatter ↗*) with a 24-karat gold lighting model, dynamic mouse luster waves, and tactile click shockwaves.
+- **Interactive Project TV Player**: Channel-based project player inspired by retro broadcast consoles with dial knobs, animated SVG concept pipelines, and sticky storytelling scroll.
+- **Agentic AI Workflow Visuals**: Interactive architecture breakdown showcasing RAG pipelines, reasoning core nodes, and autonomous tool execution.
+- **Embedded Conversational Assistant**: Grounded local assistant with dual modes:
+  - Local portfolio knowledge mode (zero third-party dependencies required).
+  - Optional server-side AI integration using the OpenAI Responses API.
+- **Guided Project Brief Builder**: Interactive 3-step project brief generator allowing visitors to draft specifications, select scope/timeline preferences, and export directly.
+- **Responsive & Accessible**: Native light and dark themes, strict accessibility (`prefers-reduced-motion` detection, ARIA status announcements), and mobile-first responsive design.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- **Node.js**: `24.x` recommended (supports native ESM and built-in test runner).
+
+### Installation & Development
+
+```bash
+# Clone the repository
+git clone https://github.com/sajjadgill720/Portfolio.git
+
+# Enter the project directory
+cd Portfolio
+
+# Start the local development server (serves directly from public/)
 npm run dev
 ```
 
-Open http://localhost:3000. The development server also serves the production app; `npm start` uses the same command. If that port is occupied, set `PORT` in `.env`.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## What you need to do
+---
 
-1. Review the name, bio, skills, project descriptions, and project status in `public/data.js`. Eight documented projects are featured; the remaining twelve public project repositories are linked in the archive. No employment history or qualifications have been invented.
-2.My email is set up. To override it on the Node server, set `CONTACT_EMAIL` in `.env`; for static hosting, edit `profile.email` in `public/data.js`. A photo, LinkedIn, CV, and custom domain can be added later.
-3. To enable AI conversations, put `OPENAI_API_KEY` or some other model and an available Responses API model ID in `OPENAI_MODEL` in `.env`, then restart. Use an API account with billing enabled. Keep the key on the server and never put `.env` in a repository. No paid API call has been tested without your credentials.
-4. For Vercel, import the repository with Root Directory set to the repository root, Framework Preset **Other**, Build Command `npm run build`, and Output Directory `dist`. The checked-in `vercel.json` explicitly disables framework detection and configures the static output plus the `api/` functions. Set AI environment variables in the Vercel project settings and redeploy. Alternatively, use `npm start` on a Node host, or publish `dist` alone on static hosting. Static-only hosts support the built-in knowledge assistant and brief builder but cannot run the AI endpoint. Serve files over HTTP(S).
-5. After deployment, switch a TV channel, ask the assistant about GymRetain, download a project brief, and test your contact link on a phone. If using AI, verify a real response and set provider usage limits before sharing publicly.
+## 🛠 Configuration
 
-## Chat features
+Create a `.env` file in the project root to configure optional capabilities:
 
-- Grounded local answers about projects, background, and tools, with repository source links.
-- Optional server-side OpenAI Responses API integration; source knowledge is supplied in the server instructions. The model has no action tools and cannot send messages or book meetings.
-- Session-only browser history, New chat, conversation export, keyboard submission, loading feedback, and graceful fallback when the provider is unavailable.
-- A guided three-step project brief with required-field validation, budget/timeline preferences, session drafts, an editable review, copy/download, and an Email brief action that opens an email draft in the visitor's email app. The visitor sends it manually.
-- Input limits, same-origin validation, request timeouts, an explicit static-file allowlist, and a simple in-memory rate limit of 20 requests per minute per socket IP. This limit is per server process; multiple instances need a shared limiter. Behind a reverse proxy, visitors may share the proxy's IP; configure a trusted deployment-specific limiter before a high-traffic AI launch.
+```env
+PORT=3000
 
-Messages are stored in sessionStorage on the visitor's browser. With AI configured, the latest 12 messages are sent through the server to OpenAI with `store:false`. This is not a promise of zero provider retention. The app does not log message bodies or persist conversations on the server.
+# Optional: Enable OpenAI conversational assistant mode
+OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-4o-mini
 
-## Visuals and content
-
-The lower-page studio design includes an illustrated AI automation workflow, animated service blueprints, problem-solving stages, grouped toolkit cards, and a procedural particle network in the contact section. See [design notes](docs/studio-design.md). `public/studio.js` and `public/studio.css` implement these sections using inline SVG, CSS, and Canvas.
-
-The landing page  follows the supplied visual reference: a larger vortex, original illustrated capability labels, a subtle landscape base, and a light/dark toggle. The saved theme preference stays in localStorage. The project count reflects the 20 verified public project repositories; the page does not invent years of experience.
-
-The TV uses native document scrolling and CSS sticky positioning to advance through eight projects before continuing to the interactive sculpture. It never cancels wheel or touch scrolling. Visitors can turn off “Scroll through projects,” jump to a channel, or use “Skip to the experiment” / “Continue down.” Scrolling upward reverses the sequence. Reduced-motion mode and small viewports without sufficient room use the regular unpinned player with manual controls.
-
-`public/icons.js` contains original SVG artwork for all eight project themes and the landing capabilities. No icon packs, favicons from other sites, browser assets, or downloaded illustrations are used.
-
-The motion extension includes a draggable eight-cover project deck, a TV-inspired project player with eight original animated illustrations, numbered channels, a range dial, keyboard controls, and screen swipes. Each project also has a notes dialog and assistant handoff. Scroll reveals, project-art tilt, animated diagrams, and a four-stage process section complete the browsing experience. The player's Pause all motion control also controls the hero vortex and ambient CSS animations; reduced-motion settings disable them. Project-player and deck animations pause offscreen.
-
-The vortex and project concept illustrations are drawn locally with Canvas, SVG, and CSS. They are original visual summaries, not screenshots of deployed products. The UI labels this distinction. Google Fonts enhance the typography; system fallbacks are provided if the fonts cannot load. The vortex has a pause control and respects reduced-motion settings.
-
-
-## Check and build
-
-```powershell
-npm test
-npm run build
+# Optional: Override contact email displayed in the UI
+CONTACT_EMAIL=your_email@example.com
 ```
 
-Tests exercise the actual HTTP server: public asset serving, private-file denial, message validation, cross-origin rejection, malformed input, grounded responses, and unknown-fact handling. Browser checks cover desktop/mobile layout, channel controls, chat, session restoration/reset, brief downloads, and animation controls. AI provider acceptance still requires real credentials.
+> **Note**: If `OPENAI_API_KEY` is not provided, the assistant automatically runs in **local knowledge mode**, answering questions from `public/knowledge.js` without requiring API keys or network access.
 
-## Editing
+---
 
-`public/index.html`: page structure and copy. `public/style.css`: base visual system and responsive layouts. `public/data.js`: profile, featured projects, skills, and archive. `public/knowledge.js`: local assistant. `public/portfolio.js`: browser entrypoint. Feature modules handle motion, studio, hero, signal experiment, contact portal, and the project brief. `api/`: shared config/chat handlers used by Vercel and `dev-server.js`.
+## 📦 Building for Production
 
-The Git remote is `sajjadgill720/Portfolio`. Build output (`dist/`), local Vercel output (`.vercel/`), and credentials are ignored by Git. Design screenshots and review notes in `docs/` are retained as development evidence and excluded from Vercel uploads by `.vercelignore`.
+```bash
+# Build static files to dist/
+npm run build
 
+# Run automated test suites
+npm test
+```
 
-The hero vortex responds to pointer movement and tap ripples. Capability cards jump directly to relevant TV channels, and the central monogram opens the assistant. The animation respects the global pause control, reduced motion, and offscreen visibility. `public/hero-vortex.js` owns the Canvas interaction; `public/polish.css` supplies final interaction states.
+### Deployment
+
+The repository is configured for immediate deployment to **Vercel** or any static host:
+- **Build Command**: `npm run build`
+- **Output Directory**: `dist`
+- **Serverless API**: Handled automatically via `api/chat.js` and `api/config.js`.
+
+---
+
+## 📁 Project Structure
+
+```
+├── api/                  # Serverless API routes (chat & config)
+├── public/               # Application source assets
+│   ├── assets/           # Media & avatar photography
+│   ├── hero-vortex.js    # 3D procedural golden particle canvas & controls
+│   ├── motion.js         # TV project player & sticky scroll storytelling
+│   ├── studio.js         # AI automation workflows & interactive cards
+│   ├── knowledge.js      # Local portfolio Q&A engine
+│   ├── portfolio.js      # Main client application orchestration
+│   ├── style.css         # Typography, layout, and theme tokens
+│   ├── motion.css        # Interactive transitions & animations
+│   ├── refinements.css   # Studio layouts & component styling
+│   └── index.html        # Semantic HTML structure
+├── scripts/
+│   └── build.js          # Independent static build script
+├── tests/                # Node.js native test suites
+├── dev-server.js         # Zero-dependency local Node.js development server
+└── vercel.json           # Production deployment configuration
+```
+
+---
+
+## 📄 License
+
+Distributed under the **MIT License**. See [`LICENSE`](./LICENSE) for more information.

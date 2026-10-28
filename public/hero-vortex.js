@@ -6,33 +6,50 @@ export function initHeroVortex({getTheme, isPaused}) {
   const ctx = canvas.getContext('2d');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const status = document.querySelector('#hero-lab-status');
+  const subtitleEl = document.querySelector('#hero-lab-subtitle');
   const shapeButtons = stage.querySelectorAll('[data-hero-shape]');
   const scatterButton = stage.querySelector('#hero-scatter');
 
-  // Dense particle distribution across the entire volume
-  const count = innerWidth < 650 ? 1150 : 1950;
+  // Dense, high-volume particle distribution across the entire sculpture area
+  const count = innerWidth < 650 ? 1600 : 2800;
   const points = [];
   for (let i = 0; i < count; i++) {
     const u = (i / count) * Math.PI * 2, v = i * 2.399963;
+    // Knot coordinates
     const a = 2 + Math.cos(3 * u);
     const k = [a * Math.cos(2 * u), a * Math.sin(2 * u), Math.sin(3 * u)];
-    // Tube envelope around knot for dense rich 3D depth
-    k[0] += 0.19 * Math.cos(v);
-    k[1] += 0.19 * Math.sin(v);
-    k[2] += 0.19 * Math.sin(v + u);
+    // Multi-layer volumetric envelope around knot for deep 3D density
+    const tubeR = 0.08 + 0.17 * Math.sin(i * 1.618);
+    k[0] += tubeR * Math.cos(v);
+    k[1] += tubeR * Math.sin(v);
+    k[2] += tubeR * Math.sin(v + u);
+
+    // Orbit / Sphere coordinates with dense volumetric shell
     const y = 1 - 2 * (i + 0.5) / count;
     const r = Math.sqrt(Math.max(0, 1 - y * y));
-    const sphere = [2.55 * r * Math.cos(v), 2.55 * y, 2.55 * r * Math.sin(v)];
-    points.push({k, sphere, scatter: [Math.cos(v) * 5, Math.sin(v * 1.7) * 5, Math.sin(v) * 5]});
+    const sphereRadius = 2.55 * (0.94 + 0.12 * (i % 3 === 0 ? 0.98 : 1.02));
+    const sphere = [sphereRadius * r * Math.cos(v), sphereRadius * y, sphereRadius * r * Math.sin(v)];
+
+    // Scatter vectors
+    const scatterDist = 4.5 + 2.5 * Math.sin(i * 0.91);
+    const scatter = [
+      Math.cos(v) * scatterDist,
+      Math.sin(v * 1.7) * scatterDist,
+      Math.sin(v * 0.9) * scatterDist
+    ];
+
+    points.push({
+      k,
+      sphere,
+      scatter,
+      phase: (i * 0.618033) % (Math.PI * 2),
+      specularBias: (i % 7 === 0) ? 1.35 : ((i % 4 === 0) ? 1.15 : 0.92)
+    });
   }
 
   let width = 0, height = 0, raf = 0, visible = true, last = 0;
   let angle = 0, morph = 0, target = 0, burst = 0, burstTarget = 0;
   let pointerX = 0, pointerY = 0, turnX = 0, turnY = 0;
-  let scatterTimer = null;
-  let userInteracted = false;
-  let autoTimer1 = null;
-  let autoTimer2 = null;
 
   // Dense golden luster & dynamic click movement tracking
   let cursorX = 0, cursorY = 0, targetCursorX = 0, targetCursorY = 0;
@@ -40,7 +57,26 @@ export function initHeroVortex({getTheme, isPaused}) {
   const ripples = [];
   const sparks = [];
 
+  // Motion cycling & subtitle management
+  let autoCycleTimer = null;
+  let idleResumeTimer = null;
+  let scatterTimeout = null;
+  let currentMotionStep = 0; // 0 = knot, 1 = orbit, 2 = scatter
+  let userControlled = false;
+
   const canMove = () => !isPaused() && !reduce.matches;
+  const isHeroInView = () => visible || (typeof window !== 'undefined' && window.scrollY < (window.innerHeight || 900));
+
+  function setSubtitle(text) {
+    if (subtitleEl) {
+      subtitleEl.style.opacity = '0';
+      setTimeout(() => {
+        subtitleEl.textContent = text;
+        subtitleEl.style.opacity = '1';
+      }, 140);
+    }
+    if (status) status.textContent = text;
+  }
 
   function draw(now = 0) {
     raf = 0;
@@ -49,7 +85,7 @@ export function initHeroVortex({getTheme, isPaused}) {
     last = now;
 
     if (animate) {
-      angle += dt * 0.13;
+      angle += dt * 0.14;
       morph += (target - morph) * 0.055;
       burst += (burstTarget - burst) * 0.065;
       turnX += (pointerX - turnX) * 0.035;
@@ -76,23 +112,25 @@ export function initHeroVortex({getTheme, isPaused}) {
     const scale = Math.min(width, height) * 0.115;
     const isDark = getTheme?.() === 'dark';
 
-    // Dense ambient golden luster atmosphere spanning the whole stage
-    const auraRadius = Math.min(width, height) * 0.48;
+    // Dense ambient golden luster aura spanning the entire stage
+    const auraRadius = Math.min(width, height) * 0.52;
     const grad = ctx.createRadialGradient(width / 2, height * 0.46, 0, width / 2, height * 0.46, auraRadius);
-    grad.addColorStop(0, isDark ? 'rgba(235, 185, 45, 0.16)' : 'rgba(255, 215, 65, 0.18)');
-    grad.addColorStop(0.5, isDark ? 'rgba(215, 155, 30, 0.07)' : 'rgba(240, 180, 40, 0.08)');
-    grad.addColorStop(1, 'rgba(215, 155, 30, 0)');
+    grad.addColorStop(0, isDark ? 'rgba(255, 210, 60, 0.22)' : 'rgba(255, 215, 65, 0.24)');
+    grad.addColorStop(0.38, isDark ? 'rgba(225, 165, 30, 0.11)' : 'rgba(245, 180, 40, 0.12)');
+    grad.addColorStop(0.72, isDark ? 'rgba(195, 135, 20, 0.03)' : 'rgba(215, 150, 25, 0.04)');
+    grad.addColorStop(1, 'rgba(215, 150, 25, 0)');
     ctx.fillStyle = grad;
     ctx.beginPath();
     ctx.arc(width / 2, height * 0.46, auraRadius, 0, Math.PI * 2);
     ctx.fill();
 
-    // Dynamic mouse spotlight golden luster
+    // Dynamic mouse spotlight golden luster spanning across the area
     if (hoverEnergy > 0.01 && animate) {
-      const spotRadius = scale * 2.8;
+      const spotRadius = scale * 3.4;
       const spotGrad = ctx.createRadialGradient(cursorX, cursorY, 0, cursorX, cursorY, spotRadius);
-      spotGrad.addColorStop(0, `rgba(255, 230, 95, ${0.22 * hoverEnergy})`);
-      spotGrad.addColorStop(0.45, `rgba(245, 190, 45, ${0.1 * hoverEnergy})`);
+      spotGrad.addColorStop(0, `rgba(255, 235, 115, ${0.28 * hoverEnergy})`);
+      spotGrad.addColorStop(0.35, `rgba(255, 195, 45, ${0.15 * hoverEnergy})`);
+      spotGrad.addColorStop(0.7, `rgba(220, 150, 30, ${0.05 * hoverEnergy})`);
       spotGrad.addColorStop(1, 'rgba(240, 180, 40, 0)');
       ctx.fillStyle = spotGrad;
       ctx.beginPath();
@@ -100,7 +138,7 @@ export function initHeroVortex({getTheme, isPaused}) {
       ctx.fill();
     }
 
-    // Update and draw golden click ripples
+    // Update and draw golden click shockwaves
     for (let i = ripples.length - 1; i >= 0; i--) {
       const r = ripples[i];
       if (animate) {
@@ -111,17 +149,17 @@ export function initHeroVortex({getTheme, isPaused}) {
         ripples.splice(i, 1);
         continue;
       }
-      // Dual-phase golden shockwave rings
-      ctx.strokeStyle = `rgba(255, 230, 85, ${r.intensity * 0.75})`;
-      ctx.lineWidth = Math.max(1, 3.2 * r.intensity);
+      // Dual-phase radiant golden shockwave rings
+      ctx.strokeStyle = `rgba(255, 235, 110, ${r.intensity * 0.85})`;
+      ctx.lineWidth = Math.max(1.2, 3.8 * r.intensity);
       ctx.beginPath();
       ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
       ctx.stroke();
 
-      ctx.strokeStyle = `rgba(240, 180, 40, ${r.intensity * 0.4})`;
-      ctx.lineWidth = Math.max(0.8, 1.6 * r.intensity);
+      ctx.strokeStyle = `rgba(245, 185, 40, ${r.intensity * 0.5})`;
+      ctx.lineWidth = Math.max(0.8, 2.0 * r.intensity);
       ctx.beginPath();
-      ctx.arc(r.x, r.y, Math.max(0, r.radius - 8), 0, Math.PI * 2);
+      ctx.arc(r.x, r.y, Math.max(0, r.radius - 9), 0, Math.PI * 2);
       ctx.stroke();
     }
 
@@ -135,17 +173,25 @@ export function initHeroVortex({getTheme, isPaused}) {
       let px = width / 2 + x * scale * f;
       let py = height * 0.46 + y * scale * f;
 
-      // Inherent dense golden luster across all particles in the area
-      const specular3D = Math.pow(Math.max(0, (4 - depth) / 8), 1.5);
-      let luster = 0.55 + 0.45 * specular3D;
+      // Inherent dense 24K golden luster across all particles in the sculpture
+      const specular3D = Math.pow(Math.max(0, (4.2 - depth) / 8.4), 1.6);
+      const shimmer = Math.sin(angle * 2.6 + p.phase + depth * 0.9) * 0.22;
+      let luster = (0.78 + 0.46 * specular3D + shimmer) * p.specularBias;
 
-      // Mouse motion adds an intense sweeping golden wave
+      // Mouse motion adds an intense sweeping golden wave across the area
       const dx = px - cursorX;
       const dy = py - cursorY;
       const dist = Math.hypot(dx, dy);
-      const lusterRadius = scale * 2.8;
+      const lusterRadius = scale * 3.2;
       const mouseWave = Math.max(0, 1 - dist / lusterRadius) * hoverEnergy;
-      luster += mouseWave * 0.75;
+      luster += mouseWave * 1.15;
+
+      // Tactile organic deflection on mouse proximity
+      if (mouseWave > 0.04 && animate) {
+        const push = mouseWave * mouseWave * 7.5;
+        px += (dx / (dist || 1)) * push;
+        py += (dy / (dist || 1)) * push;
+      }
 
       // Click shockwave displacement & intense golden flare
       if (animate && ripples.length > 0) {
@@ -154,14 +200,12 @@ export function initHeroVortex({getTheme, isPaused}) {
           const rdy = py - rip.y;
           const rdist = Math.hypot(rdx, rdy);
           const waveDelta = Math.abs(rdist - rip.radius);
-          if (waveDelta < 56) {
-            const waveFactor = (1 - waveDelta / 56) * rip.intensity;
-            // Physical wave displacement
-            const push = waveFactor * 20;
+          if (waveDelta < 60) {
+            const waveFactor = (1 - waveDelta / 60) * rip.intensity;
+            const push = waveFactor * 22;
             px += (rdx / (rdist || 1)) * push;
             py += (rdy / (rdist || 1)) * push;
-            // Intense golden wave flare
-            luster += waveFactor * 1.6;
+            luster += waveFactor * 2.2;
           }
         }
       }
@@ -169,41 +213,59 @@ export function initHeroVortex({getTheme, isPaused}) {
       return {x: px, y: py, z: depth, f, luster};
     }).sort((p, q) => q.z - p.z);
 
-    // Dense Golden Luster Color Engine
+    // Dense Golden Luster Color Engine across all particles
     for (const p of projected) {
       const depthFactor = Math.max(0, Math.min(1, (4 - p.z) / 8));
-      const opacity = 0.35 + 0.62 * depthFactor;
+      const opacity = 0.42 + 0.58 * depthFactor;
       const luster = p.luster;
 
-      // Dense 24K Molten Gold palette across the entire sculpture
+      // Pure Dense 24-Karat Gold Gradient
+      // Low luster (back/shadow): Deep molten warm amber-gold (r:205, g:140, b:12)
+      // Mid luster (body/front): Radiant 24K pure gold (r:255, g:198, b:24)
+      // High luster (specular glint/mouse/shockwave): Glistening champagne gold (r:255, g:248, b:180)
       let r, g, b;
       if (luster < 1.0) {
-        // Deep warm amber gold to vibrant 24k gold
-        const t = Math.max(0, luster);
-        r = Math.round(210 + 45 * t);
-        g = Math.round(150 + 60 * t);
-        b = Math.round(20 + 35 * t);
-      } else {
-        // Vibrant 24k gold to brilliant golden luster highlight
-        const t = Math.min(1, luster - 1.0);
+        const t = Math.max(0, Math.min(1, luster));
+        r = Math.round(205 + 50 * t);
+        g = Math.round(140 + 60 * t);
+        b = Math.round(12 + 20 * t);
+      } else if (luster < 1.8) {
+        const t = Math.min(1, (luster - 1.0) / 0.8);
         r = 255;
-        g = Math.round(210 + 38 * t);
-        b = Math.round(55 + 135 * t);
+        g = Math.round(200 + 40 * t);
+        b = Math.round(32 + 110 * t);
+      } else {
+        const t = Math.min(1, (luster - 1.8) / 1.2);
+        r = 255;
+        g = Math.round(240 + 15 * t);
+        b = Math.round(142 + 105 * t);
       }
 
       const a = Math.min(1, opacity * (0.85 + 0.35 * Math.min(1, luster)));
-      const rad = Math.max(0.7, 1.15 * p.f) * (0.92 + Math.min(0.85, luster * 0.4));
+      const baseRad = Math.max(0.75, 1.25 * p.f);
+      const rad = baseRad * (0.92 + Math.min(0.85, luster * 0.35));
 
+      // Golden luster outer halo glow for luminous particles
+      if (luster > 0.95 && depthFactor > 0.25) {
+        const haloA = Math.min(0.42, (luster - 0.95) * 0.32) * a;
+        ctx.fillStyle = `rgba(255, 205, 45, ${haloA})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, rad * 1.85, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Core dense 24K gold particle
       ctx.fillStyle = `rgba(${r}, ${g}, ${b}, ${a})`;
       ctx.beginPath();
       ctx.arc(p.x, p.y, rad, 0, Math.PI * 2);
       ctx.fill();
 
-      // Specular diamond gold center for high-luster points
-      if (luster > 1.05 && depthFactor > 0.35) {
-        ctx.fillStyle = `rgba(255, 252, 225, ${Math.min(0.95, (luster - 1.05) * 2.2)})`;
+      // Specular diamond gold highlight at the center
+      if (luster > 1.15 && depthFactor > 0.3) {
+        const specA = Math.min(0.96, (luster - 1.15) * 1.7) * a;
+        ctx.fillStyle = `rgba(255, 255, 228, ${specA})`;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, rad * 0.48, 0, Math.PI * 2);
+        ctx.arc(p.x, p.y, Math.max(0.4, rad * 0.42), 0, Math.PI * 2);
         ctx.fill();
       }
     }
@@ -214,21 +276,28 @@ export function initHeroVortex({getTheme, isPaused}) {
       if (animate) {
         s.x += s.vx * dt;
         s.y += s.vy * dt;
-        s.vx *= 0.93;
-        s.vy *= 0.93;
+        s.vx *= 0.92;
+        s.vy *= 0.92;
         s.life -= dt * s.decay;
       }
       if (s.life <= 0) {
         sparks.splice(i, 1);
         continue;
       }
-      ctx.fillStyle = `rgba(255, 228, 75, ${s.life * 0.95})`;
+      // Spark outer gold halo
+      ctx.fillStyle = `rgba(255, 205, 40, ${s.life * 0.45})`;
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, Math.max(1.2, s.size * s.life * 2.0), 0, Math.PI * 2);
+      ctx.fill();
+
+      // Spark brilliant 24k / champagne center
+      ctx.fillStyle = `rgba(255, 245, 160, ${s.life * 0.95})`;
       ctx.beginPath();
       ctx.arc(s.x, s.y, Math.max(0.6, s.size * s.life), 0, Math.PI * 2);
       ctx.fill();
     }
 
-    if (visible && animate && !document.hidden) {
+    if (animate && isHeroInView() && !document.hidden) {
       raf = requestAnimationFrame(draw);
     }
   }
@@ -255,48 +324,96 @@ export function initHeroVortex({getTheme, isPaused}) {
     refresh();
   }
 
-  function stopAutoSequence() {
-    if (userInteracted) return;
-    userInteracted = true;
-    clearTimeout(autoTimer1);
-    clearTimeout(autoTimer2);
+  function pauseAutoCycleTemporarily() {
+    clearTimeout(autoCycleTimer);
+    clearTimeout(idleResumeTimer);
+    userControlled = true;
+    // Resume gentle auto cycling after 14s of inactivity
+    idleResumeTimer = setTimeout(() => {
+      userControlled = false;
+      scheduleNextMotionStep();
+    }, 14000);
   }
 
   function setShape(shapeName, fromAuto = false) {
-    if (!fromAuto) stopAutoSequence();
+    if (!fromAuto) pauseAutoCycleTemporarily();
     target = shapeName === 'sphere' ? 1 : 0;
     burstTarget = 0;
-    clearTimeout(scatterTimer);
+    clearTimeout(scatterTimeout);
     scatterButton?.classList.remove('is-active');
     shapeButtons.forEach(b => {
       b.setAttribute('aria-pressed', String(b.dataset.heroShape === shapeName));
     });
-    if (status) status.textContent = `${target ? 'The orbit' : 'The knot'} selected.`;
+    if (fromAuto) {
+      setSubtitle(shapeName === 'sphere'
+        ? 'The orbit · Golden celestial field. Move to turn.'
+        : 'The knot · Continuous golden curve. Move to turn.');
+    } else {
+      setSubtitle(shapeName === 'sphere'
+        ? 'The orbit selected. Move to turn.'
+        : 'The knot selected. Move to turn.');
+    }
     refresh();
   }
 
   function triggerScatter(fromAuto = false) {
-    if (!fromAuto) stopAutoSequence();
-    clearTimeout(scatterTimer);
+    if (!fromAuto) pauseAutoCycleTemporarily();
+    clearTimeout(scatterTimeout);
     burstTarget = burstTarget ? 0 : 1;
     if (burstTarget) {
       scatterButton?.classList.add('is-active');
+      setSubtitle(fromAuto
+        ? 'Scatter ↗ · Radiant golden dispersion.'
+        : 'Scatter ↗ · Tap to burst or select a shape.');
     } else {
       scatterButton?.classList.remove('is-active');
-    }
-    if (status) {
-      status.textContent = burstTarget
-        ? 'Scattered. Select a shape to bring it together.'
-        : 'Sculpture reassembled.';
+      setSubtitle('Move to turn. Tap to scatter. Or use the buttons.');
     }
     refresh();
+
     if (canMove()) {
-      scatterTimer = setTimeout(() => {
+      scatterTimeout = setTimeout(() => {
         burstTarget = 0;
         scatterButton?.classList.remove('is-active');
-        if (status) status.textContent = 'Sculpture reassembled.';
+        if (fromAuto) {
+          // Reassembled, continue cycle
+          scheduleNextMotionStep();
+        } else {
+          setSubtitle('Move to turn. Tap to scatter. Or use the buttons.');
+        }
         refresh();
-      }, 1400);
+      }, 1900);
+    }
+  }
+
+  // Smooth, continuous multi-motion cycling loop:
+  // Step 0: The knot (4.5s)
+  // Step 1: The orbit (4.5s)
+  // Step 2: Scatter ↗ (2.0s burst + reassemble into knot)
+  function scheduleNextMotionStep() {
+    if (userControlled || !canMove()) return;
+    clearTimeout(autoCycleTimer);
+
+    if (currentMotionStep === 0) {
+      // Current is knot, schedule switch to orbit
+      autoCycleTimer = setTimeout(() => {
+        if (userControlled || !canMove()) return;
+        currentMotionStep = 1;
+        setShape('sphere', true);
+        scheduleNextMotionStep();
+      }, 4500);
+    } else if (currentMotionStep === 1) {
+      // Current is orbit, schedule scatter
+      autoCycleTimer = setTimeout(() => {
+        if (userControlled || !canMove()) return;
+        currentMotionStep = 2;
+        triggerScatter(true);
+      }, 4500);
+    } else {
+      // Current is scatter, reassemble into knot
+      currentMotionStep = 0;
+      setShape('knot', true);
+      scheduleNextMotionStep();
     }
   }
 
@@ -309,56 +426,63 @@ export function initHeroVortex({getTheme, isPaused}) {
     ripples.push({
       x: cx,
       y: cy,
-      radius: 4,
-      maxRadius: Math.min(width, height) * 0.9,
+      radius: 6,
+      maxRadius: Math.min(width, height) * 0.95,
       intensity: 1.0,
-      speed: Math.min(width, height) * 1.5
+      speed: Math.min(width, height) * 1.6
     });
 
     // 3D torque impulse based on hit point
-    turnX += ((cx - width / 2) / width) * 0.22;
-    turnY += ((cy - height / 2) / height) * 0.22;
+    turnX += ((cx - width / 2) / width) * 0.28;
+    turnY += ((cy - height / 2) / height) * 0.28;
 
     // Dense golden burst sparks
-    for (let i = 0; i < 28; i++) {
+    for (let i = 0; i < 36; i++) {
       const ang = Math.random() * Math.PI * 2;
-      const spd = 50 + Math.random() * 210;
+      const spd = 60 + Math.random() * 240;
       sparks.push({
         x: cx,
         y: cy,
         vx: Math.cos(ang) * spd,
         vy: Math.sin(ang) * spd,
         life: 1.0,
-        decay: 1.3 + Math.random() * 1.4,
-        size: 1.2 + Math.random() * 2.6
+        decay: 1.2 + Math.random() * 1.3,
+        size: 1.4 + Math.random() * 2.8
       });
     }
   }
 
   // Hook up button controls
   shapeButtons.forEach(btn => {
-    btn.addEventListener('click', () => setShape(btn.dataset.heroShape, false));
+    btn.addEventListener('click', () => {
+      const shape = btn.dataset.heroShape;
+      currentMotionStep = shape === 'sphere' ? 1 : 0;
+      setShape(shape, false);
+    });
   });
 
-  scatterButton?.addEventListener('click', () => triggerScatter(false));
+  scatterButton?.addEventListener('click', () => {
+    triggerScatter(false);
+  });
 
   // Pointer interaction on canvas & stage
-  let down = null;
+  let lastClickTime = 0;
   canvas.addEventListener('pointerdown', e => {
-    stopAutoSequence();
-    down = {x: e.clientX, y: e.clientY};
+    const now = Date.now();
+    triggerClickWave(e.clientX, e.clientY);
+    refresh();
+    // Double click triggers scatter
+    if (now - lastClickTime < 340) {
+      triggerScatter(false);
+    }
+    lastClickTime = now;
+  });
+
+  stage.addEventListener('pointerdown', e => {
+    if (e.target.closest('button, a, canvas')) return;
     triggerClickWave(e.clientX, e.clientY);
     refresh();
   });
-
-  canvas.addEventListener('pointerup', e => {
-    if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) < 10) {
-      triggerScatter(false);
-    }
-    down = null;
-  });
-
-  canvas.addEventListener('pointercancel', () => { down = null; });
 
   stage.addEventListener('pointermove', e => {
     if (e.pointerType === 'touch') return;
@@ -395,34 +519,30 @@ export function initHeroVortex({getTheme, isPaused}) {
     });
   });
 
-  // Automatic sequence on start:
-  // Starts on knot -> switches to orbit -> switches to scatter -> reassembles
-  function startAutoSequence() {
-    if (userInteracted || !canMove()) return;
-    autoTimer1 = setTimeout(() => {
-      if (userInteracted || !canMove()) return;
-      // Step 2: Automatically switch to The orbit
-      setShape('sphere', true);
-
-      autoTimer2 = setTimeout(() => {
-        if (userInteracted || !canMove()) return;
-        // Step 3: Automatically trigger Scatter
-        triggerScatter(true);
-      }, 2400);
-    }, 2200);
-  }
-
   new ResizeObserver(resize).observe(canvas);
   new IntersectionObserver(([entry]) => {
-    visible = entry.isIntersecting;
-    refresh();
-  }, {threshold: 0.05}).observe(stage);
+    visible = entry.isIntersecting || entry.intersectionRatio > 0;
+    if (visible && !raf) refresh();
+  }, {threshold: 0}).observe(stage);
+
+  window.addEventListener('scroll', () => {
+    if (isHeroInView() && !raf && canMove()) {
+      refresh();
+    }
+  }, {passive: true});
 
   document.addEventListener('portfolio-motion-change', refresh);
-  document.addEventListener('visibilitychange', refresh);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      last = 0;
+      refresh();
+      if (!userControlled) scheduleNextMotionStep();
+    }
+  });
   document.addEventListener('portfolio-theme-change', refresh);
   reduce.addEventListener('change', refresh);
 
   resize();
-  startAutoSequence();
+  setSubtitle('The knot · Continuous golden curve. Move to turn.');
+  scheduleNextMotionStep();
 }
