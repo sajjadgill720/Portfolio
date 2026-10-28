@@ -7,7 +7,7 @@ A complete portfolio based on my public GitHub work, with an original cream-and-
 Requires Node.js 24.x (tested with 24.22). The major version is pinned for reproducible Vercel builds.
 
 ```powershell
-cd E:\Portfolio
+\Portfolio
 npm run dev
 ```
 
@@ -16,8 +16,8 @@ Open http://localhost:3000. The development server also serves the production ap
 ## What you need to do
 
 1. Review the name, bio, skills, project descriptions, and project status in `public/data.js`. Eight documented projects are featured; the remaining twelve public project repositories are linked in the archive. No employment history or qualifications have been invented.
-2. Your contact email is configured as `self.starter.sr@gmail.com`, supplied by you. To override it on the Node server, set `CONTACT_EMAIL` in `.env`; for static hosting, edit `profile.email` in `public/data.js`. A photo, LinkedIn, CV, and custom domain can be added later.
-3. To enable AI conversations, put `OPENAI_API_KEY` and an available Responses API model ID in `OPENAI_MODEL` in `.env`, then restart. Use an API account with billing enabled. Keep the key on the server and never put `.env` in a repository. No paid API call has been tested without your credentials.
+2.My email is set up. To override it on the Node server, set `CONTACT_EMAIL` in `.env`; for static hosting, edit `profile.email` in `public/data.js`. A photo, LinkedIn, CV, and custom domain can be added later.
+3. To enable AI conversations, put `OPENAI_API_KEY` or some other model and an available Responses API model ID in `OPENAI_MODEL` in `.env`, then restart. Use an API account with billing enabled. Keep the key on the server and never put `.env` in a repository. No paid API call has been tested without your credentials.
 4. For Vercel, import the repository with Root Directory set to the repository root, Framework Preset **Other**, Build Command `npm run build`, and Output Directory `dist`. The checked-in `vercel.json` explicitly disables framework detection and configures the static output plus the `api/` functions. Set AI environment variables in the Vercel project settings and redeploy. Alternatively, use `npm start` on a Node host, or publish `dist` alone on static hosting. Static-only hosts support the built-in knowledge assistant and brief builder but cannot run the AI endpoint. Serve files over HTTP(S).
 5. After deployment, switch a TV channel, ask the assistant about GymRetain, download a project brief, and test your contact link on a phone. If using AI, verify a real response and set provider usage limits before sharing publicly.
 
@@ -33,9 +33,9 @@ Messages are stored in sessionStorage on the visitor's browser. With AI configur
 
 ## Visuals and content
 
-The lower-page studio redesign adds an ImageGen-created ceramic ribbon sculpture, animated service blueprints, illustrated process stages, grouped toolkit cards, and a procedural particle network in the contact section. See [design notes and exact generation prompt](docs/studio-design.md). `public/studio.js` and `public/studio.css` implement these sections; the generated project asset is `public/assets/curiosity-knot.png`.
+The lower-page studio design includes an illustrated AI automation workflow, animated service blueprints, problem-solving stages, grouped toolkit cards, and a procedural particle network in the contact section. See [design notes](docs/studio-design.md). `public/studio.js` and `public/studio.css` implement these sections using inline SVG, CSS, and Canvas.
 
-The landing page now follows the supplied visual reference: a larger vortex, original illustrated capability labels, a subtle landscape base, and a light/dark toggle. The saved theme preference stays in localStorage. The project count reflects the 20 verified public project repositories; the page does not invent years of experience.
+The landing page  follows the supplied visual reference: a larger vortex, original illustrated capability labels, a subtle landscape base, and a light/dark toggle. The saved theme preference stays in localStorage. The project count reflects the 20 verified public project repositories; the page does not invent years of experience.
 
 The TV uses native document scrolling and CSS sticky positioning to advance through eight projects before continuing to the interactive sculpture. It never cancels wheel or touch scrolling. Visitors can turn off “Scroll through projects,” jump to a channel, or use “Skip to the experiment” / “Continue down.” Scrolling upward reverses the sequence. Reduced-motion mode and small viewports without sufficient room use the regular unpinned player with manual controls.
 
@@ -45,7 +45,6 @@ The motion extension includes a draggable eight-cover project deck, a TV-inspire
 
 The vortex and project concept illustrations are drawn locally with Canvas, SVG, and CSS. They are original visual summaries, not screenshots of deployed products. The UI labels this distinction. Google Fonts enhance the typography; system fallbacks are provided if the fonts cannot load. The vortex has a pause control and respects reduced-motion settings.
 
-References and REA evidence are documented in [docs/reference-inspection.md](docs/reference-inspection.md). Setup for the optional AI backend follows the [official OpenAI quickstart](https://developers.openai.com/api/docs/quickstart) and [Responses API](https://developers.openai.com/api/reference/resources/responses/methods/create).
 
 ## Check and build
 

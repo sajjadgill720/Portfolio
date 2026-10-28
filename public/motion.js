@@ -55,7 +55,7 @@ export function initMotion({projects,projectUrl,escape,concept,openChat,send}){
  // Native document scrolling drives a sticky player; no wheel or touch scroll is cancelled.
  const section=$('#playground'),pin=document.createElement('div');pin.className='broadcast-pin';
  while(section.firstChild)pin.append(section.firstChild);section.append(pin);
- const toolbar=document.createElement('div');toolbar.className='story-toolbar';toolbar.innerHTML='<span class="story-scroll-label">Scroll to the next project ↓</span><span class="story-hint">SCROLL TO TUNE <b id="story-position">01 / 08</b></span><a href="#signal-lab" id="story-escape" class="story-continue">Continue below ↓</a>';pin.append(toolbar);
+ const toolbar=document.createElement('div');toolbar.className='story-toolbar';toolbar.innerHTML='<span class="story-scroll-label">Scroll to the next project ↓</span><span class="story-hint">SCROLL TO TUNE <b id="story-position">01 / 08</b></span><a href="#about" id="story-escape" class="story-continue">Continue below ↓</a>';pin.append(toolbar);
  $('.tv-signature').insertAdjacentHTML('beforebegin','<button class="tv-skip" aria-label="Skip the TV projects and continue below">↓<span>SKIP TV</span></button>');
  let storyEnabled=false,storyStart=0,storyStep=0,storyTravel=0,scrollFrame=null;
 
@@ -72,7 +72,7 @@ export function initMotion({projects,projectUrl,escape,concept,openChat,send}){
  function onStoryScroll(){scrollFrame=null;if(!storyEnabled)return;const progress=scrollY-storyStart;if(progress<0||progress>storyTravel+innerHeight)return;const index=Math.max(0,Math.min(projects.length-1,Math.floor(progress/storyStep)));if(index!==active)showChannel(index);section.style.setProperty('--story-progress',String(Math.max(0,Math.min(1,progress/storyTravel))));}
  window.addEventListener('scroll',()=>{if(scrollFrame===null)scrollFrame=requestAnimationFrame(onStoryScroll);},{passive:true});
  storySeek=index=>{if(storyEnabled)window.scrollTo({top:storyStart+index*storyStep+1,behavior:'instant'});};
- function skipTV(e){e.preventDefault();window.scrollTo({top:$('#signal-lab').getBoundingClientRect().top+scrollY-25,behavior:'instant'});$('#signal-lab').setAttribute('tabindex','-1');$('#signal-lab').focus({preventScroll:true});}
+ function skipTV(e){e.preventDefault();window.scrollTo({top:$('#about').getBoundingClientRect().top+scrollY-25,behavior:'instant'});$('#about').setAttribute('tabindex','-1');$('#about').focus({preventScroll:true});}
  $('#story-escape').onclick=skipTV;$('.tv-skip').onclick=skipTV;
  let resizeTimer;window.addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(measureStory,100);});reduced.addEventListener('change',measureStory);measureStory();
  document.fonts?.ready.then(measureStory);window.addEventListener('load',measureStory,{once:true});

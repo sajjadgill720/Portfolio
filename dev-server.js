@@ -9,7 +9,8 @@ const root = fileURLToPath(new URL('./public/', import.meta.url));
 const types = {
   '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml',
-  '.png': 'image/png', '.json': 'application/json'
+  '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp', '.json': 'application/json'
 };
 // Derive the allowlist from the public tree so new assets need no server edits.
 const publicFiles = new Set((await readdir(root, {recursive: true, withFileTypes: true}))

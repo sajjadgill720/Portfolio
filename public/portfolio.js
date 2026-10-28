@@ -4,7 +4,6 @@ import {initMotion} from './motion.js';
 import {icon} from './icons.js';
 import {initStudio} from './studio.js';
 import {initHeroVortex} from './hero-vortex.js';
-import {initSignalLab} from './signal-lab.js';
 import {initBrief} from './brief-experience.js';
 import {revealVortex,initContactPortal} from './portal.js';
 
@@ -78,5 +77,4 @@ if (typeof document !== 'undefined') {
   document.addEventListener('portfolio-motion-change',()=>{if(paused)cancelChatReveal();});
   initMotion({projects,projectUrl,escape,concept,openChat:setChat,send});
   initStudio();
-  initSignalLab();
 }
