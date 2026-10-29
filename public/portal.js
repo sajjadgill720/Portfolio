@@ -1,6 +1,6 @@
 // Procedural spiral ribbon mask, calculated from the real panel dimensions.
 // Reveals the actual UI rather than placing a loading animation over it.
-export function revealVortex(element,{enabled=true,onComplete=()=>{}}={}){
+export function revealVortex(element,{enabled=true,duration=1800,onComplete=()=>{}}={}){
  let frame=null,cancelled=false;
  function clean(){if(frame!==null)cancelAnimationFrame(frame);element.style.removeProperty('clip-path');element.classList.remove('is-vortex-revealing');}
  if(!enabled){clean();onComplete();return clean;}
@@ -13,7 +13,7 @@ export function revealVortex(element,{enabled=true,onComplete=()=>{}}={}){
   return `path("M ${outer.join(' L ')} L ${inner.join(' L ')} Z")`;
  }
  element.style.clipPath=mask(0);element.classList.add('is-vortex-revealing');const started=performance.now();
- function tick(now){if(cancelled)return;const t=Math.min(1,(now-started)/780),p=1-(1-t)**2.2;element.style.clipPath=mask(p);if(t<1)frame=requestAnimationFrame(tick);else{clean();onComplete();}}
+ function tick(now){if(cancelled)return;const rawT=Math.min(1,(now-started)/duration),p=1-(1-rawT)**2.2;element.style.clipPath=mask(p);if(rawT<1)frame=requestAnimationFrame(tick);else{clean();onComplete();}}
  frame=requestAnimationFrame(tick);
  return ()=>{cancelled=true;clean();};
 }

@@ -1,8 +1,8 @@
 export function initHeroVortex({getTheme, isPaused}) {
+  const hero = document.querySelector('.hero');
   const stage = document.querySelector('.vortex-stage');
-  if (!stage) return;
-  const canvas = stage.querySelector('canvas');
-  if (!canvas) return;
+  const canvas = document.querySelector('#vortex');
+  if (!hero || !stage || !canvas) return;
   const ctx = canvas.getContext('2d');
   const reduce = matchMedia('(prefers-reduced-motion: reduce)');
   const status = document.querySelector('#hero-lab-status');
@@ -10,7 +10,7 @@ export function initHeroVortex({getTheme, isPaused}) {
   const shapeButtons = stage.querySelectorAll('[data-hero-shape]');
   const scatterButton = stage.querySelector('#hero-scatter');
 
-  // Dense, high-volume particle distribution across the entire sculpture area
+  // Dense, high-volume particle distribution across the sculpture & hero area
   const count = innerWidth < 650 ? 1600 : 2800;
   const points = [];
   for (let i = 0; i < count; i++) {
@@ -30,18 +30,21 @@ export function initHeroVortex({getTheme, isPaused}) {
     const sphereRadius = 2.55 * (0.94 + 0.12 * (i % 3 === 0 ? 0.98 : 1.02));
     const sphere = [sphereRadius * r * Math.cos(v), sphereRadius * y, sphereRadius * r * Math.sin(v)];
 
-    // Scatter vectors
-    const scatterDist = 4.5 + 2.5 * Math.sin(i * 0.91);
-    const scatter = [
-      Math.cos(v) * scatterDist,
-      Math.sin(v * 1.7) * scatterDist,
-      Math.sin(v * 0.9) * scatterDist
-    ];
+    // Stratified low-discrepancy golden-ratio dispersion across the ENTIRE hero area:
+    // rx in [0, 1), ry in [0, 1)
+    const rx = ((i * 0.6180339887) % 1);
+    const ry = ((i * 0.3247179572) % 1);
+    // Full hero bounds: X from 0.03 to 0.97, Y from 0.06 to 0.92 (never leaks into lower sections!)
+    const normScatterX = 0.03 + 0.94 * rx;
+    const normScatterY = 0.06 + 0.86 * ry;
+    const scatterZ = Math.sin(i * 1.414) * 2.6;
 
     points.push({
       k,
       sphere,
-      scatter,
+      normScatterX,
+      normScatterY,
+      scatterZ,
       phase: (i * 0.618033) % (Math.PI * 2),
       specularBias: (i % 7 === 0) ? 1.35 : ((i % 4 === 0) ? 1.15 : 0.92)
     });
@@ -51,7 +54,7 @@ export function initHeroVortex({getTheme, isPaused}) {
   let angle = 0, morph = 0, target = 0, burst = 0, burstTarget = 0;
   let pointerX = 0, pointerY = 0, turnX = 0, turnY = 0;
 
-  // Dense golden luster & dynamic click movement tracking
+  // Dense golden luster & dynamic click movement tracking across the entire hero
   let cursorX = 0, cursorY = 0, targetCursorX = 0, targetCursorY = 0;
   let hoverEnergy = 0, targetHoverEnergy = 0;
   const ripples = [];
@@ -66,6 +69,15 @@ export function initHeroVortex({getTheme, isPaused}) {
 
   const canMove = () => !isPaused() && !reduce.matches;
   const isHeroInView = () => visible || (typeof window !== 'undefined' && window.scrollY < (window.innerHeight || 900));
+
+  function getStageMetrics() {
+    const heroRect = canvas.getBoundingClientRect();
+    const stageRect = stage.getBoundingClientRect();
+    const cx = (stageRect.left - heroRect.left) + stageRect.width / 2;
+    const cy = (stageRect.top - heroRect.top) + stageRect.height * 0.46;
+    const stageScale = Math.min(stageRect.width, stageRect.height) * 0.115;
+    return { cx, cy, stageScale, stageWidth: stageRect.width, stageHeight: stageRect.height };
+  }
 
   function setSubtitle(text) {
     if (subtitleEl) {
@@ -109,24 +121,28 @@ export function initHeroVortex({getTheme, isPaused}) {
 
     const a = angle + turnX, b = 0.35 + turnY;
     const ca = Math.cos(a), sa = Math.sin(a), cb = Math.cos(b), sb = Math.sin(b);
-    const scale = Math.min(width, height) * 0.115;
+    const { cx, cy, stageScale, stageWidth, stageHeight } = getStageMetrics();
     const isDark = getTheme?.() === 'dark';
 
-    // Dense ambient golden luster aura spanning the entire stage
-    const auraRadius = Math.min(width, height) * 0.52;
-    const grad = ctx.createRadialGradient(width / 2, height * 0.46, 0, width / 2, height * 0.46, auraRadius);
+    // Dense ambient golden luster aura spanning the stage, gently dispersing in scatter
+    const auraRadius = Math.min(stageWidth, stageHeight) * 0.55;
+    const gradX = cx + (width / 2 - cx) * burst;
+    const gradY = cy + (height * 0.46 - cy) * burst;
+    const gradR = auraRadius * (1 - burst * 0.3) + (Math.max(width, height) * 0.5) * burst;
+
+    const grad = ctx.createRadialGradient(gradX, gradY, 0, gradX, gradY, gradR);
     grad.addColorStop(0, isDark ? 'rgba(255, 210, 60, 0.22)' : 'rgba(255, 215, 65, 0.24)');
     grad.addColorStop(0.38, isDark ? 'rgba(225, 165, 30, 0.11)' : 'rgba(245, 180, 40, 0.12)');
     grad.addColorStop(0.72, isDark ? 'rgba(195, 135, 20, 0.03)' : 'rgba(215, 150, 25, 0.04)');
     grad.addColorStop(1, 'rgba(215, 150, 25, 0)');
     ctx.fillStyle = grad;
     ctx.beginPath();
-    ctx.arc(width / 2, height * 0.46, auraRadius, 0, Math.PI * 2);
+    ctx.arc(gradX, gradY, gradR, 0, Math.PI * 2);
     ctx.fill();
 
-    // Dynamic mouse spotlight golden luster spanning across the area
+    // Dynamic mouse spotlight golden luster spanning across the entire hero area
     if (hoverEnergy > 0.01 && animate) {
-      const spotRadius = scale * 3.4;
+      const spotRadius = stageScale * 3.4 * (1 - burst * 0.3) + Math.min(width, height) * 0.28 * burst;
       const spotGrad = ctx.createRadialGradient(cursorX, cursorY, 0, cursorX, cursorY, spotRadius);
       spotGrad.addColorStop(0, `rgba(255, 235, 115, ${0.28 * hoverEnergy})`);
       spotGrad.addColorStop(0.35, `rgba(255, 195, 45, ${0.15 * hoverEnergy})`);
@@ -164,25 +180,38 @@ export function initHeroVortex({getTheme, isPaused}) {
     }
 
     const projected = points.map(p => {
-      const base = p.k.map((n, i) => n + (p.sphere[i] - n) * morph + p.scatter[i] * burst);
+      const base = p.k.map((n, i) => n + (p.sphere[i] - n) * morph);
       const x = base[0] * ca - base[2] * sa;
       const z = base[0] * sa + base[2] * ca;
       const y = base[1] * cb - z * sb;
-      const depth = base[1] * sb + z * cb;
-      const f = 8 / (8 + depth);
-      let px = width / 2 + x * scale * f;
-      let py = height * 0.46 + y * scale * f;
+      const depth3D = base[1] * sb + z * cb;
+      const f = 8 / (8 + depth3D);
+
+      // 3D Knot or Orbit position (centered cleanly in the stage on the right)
+      const knotX = cx + x * stageScale * f;
+      const knotY = cy + y * stageScale * f;
+
+      // Scatter position (dispersed across the ENTIRE hero area, never below!)
+      const driftX = Math.sin(angle * 1.6 + p.phase) * 12;
+      const driftY = Math.cos(angle * 1.3 + p.phase) * 9;
+      const scatterX = p.normScatterX * width + driftX;
+      const scatterY = p.normScatterY * height + driftY;
+
+      // Burst interpolation: 0 = tight sculpture in stage, 1 = entire hero area dispersion
+      let px = knotX + (scatterX - knotX) * burst;
+      let py = knotY + (scatterY - knotY) * burst;
+      let depth = depth3D * (1 - burst) + p.scatterZ * burst;
 
       // Inherent dense 24K golden luster across all particles in the sculpture
       const specular3D = Math.pow(Math.max(0, (4.2 - depth) / 8.4), 1.6);
       const shimmer = Math.sin(angle * 2.6 + p.phase + depth * 0.9) * 0.22;
       let luster = (0.78 + 0.46 * specular3D + shimmer) * p.specularBias;
 
-      // Mouse motion adds an intense sweeping golden wave across the area
+      // Mouse motion adds an intense sweeping golden wave across the hero area
       const dx = px - cursorX;
       const dy = py - cursorY;
       const dist = Math.hypot(dx, dy);
-      const lusterRadius = scale * 3.2;
+      const lusterRadius = (stageScale * 3.4) * (1 - burst * 0.4) + (Math.min(width, height) * 0.35) * burst;
       const mouseWave = Math.max(0, 1 - dist / lusterRadius) * hoverEnergy;
       luster += mouseWave * 1.15;
 
@@ -220,9 +249,6 @@ export function initHeroVortex({getTheme, isPaused}) {
       const luster = p.luster;
 
       // Pure Dense 24-Karat Gold Gradient
-      // Low luster (back/shadow): Deep molten warm amber-gold (r:205, g:140, b:12)
-      // Mid luster (body/front): Radiant 24K pure gold (r:255, g:198, b:24)
-      // High luster (specular glint/mouse/shockwave): Glistening champagne gold (r:255, g:248, b:180)
       let r, g, b;
       if (luster < 1.0) {
         const t = Math.max(0, Math.min(1, luster));
@@ -359,11 +385,11 @@ export function initHeroVortex({getTheme, isPaused}) {
   function triggerScatter(fromAuto = false) {
     if (!fromAuto) pauseAutoCycleTemporarily();
     clearTimeout(scatterTimeout);
-    burstTarget = burstTarget ? 0 : 1;
-    if (burstTarget) {
+    burstTarget = burstTarget > 0.5 ? 0 : 1;
+    if (burstTarget > 0.5) {
       scatterButton?.classList.add('is-active');
       setSubtitle(fromAuto
-        ? 'Scatter ↗ · Radiant golden dispersion.'
+        ? 'Scatter ↗ · Radiant golden dispersion across the hero.'
         : 'Scatter ↗ · Tap to burst or select a shape.');
     } else {
       scatterButton?.classList.remove('is-active');
@@ -371,78 +397,81 @@ export function initHeroVortex({getTheme, isPaused}) {
     }
     refresh();
 
-    if (canMove()) {
+    if (fromAuto && burstTarget > 0.5) {
       scatterTimeout = setTimeout(() => {
         burstTarget = 0;
         scatterButton?.classList.remove('is-active');
-        if (fromAuto) {
-          // Reassembled, continue cycle
-          scheduleNextMotionStep();
-        } else {
-          setSubtitle('Move to turn. Tap to scatter. Or use the buttons.');
-        }
+        target = 0; // reassemble into knot
+        currentMotionStep = 0;
+        shapeButtons.forEach(b => {
+          b.setAttribute('aria-pressed', String(b.dataset.heroShape === 'knot'));
+        });
+        setSubtitle('Move to turn. Tap to scatter. Or use the buttons.');
         refresh();
-      }, 1900);
+      }, 3600);
     }
   }
 
-  // Smooth, continuous multi-motion cycling loop:
-  // Step 0: The knot (4.5s)
-  // Step 1: The orbit (4.5s)
-  // Step 2: Scatter ↗ (2.0s burst + reassemble into knot)
   function scheduleNextMotionStep() {
-    if (userControlled || !canMove()) return;
     clearTimeout(autoCycleTimer);
+    if (!canMove() || userControlled) return;
 
-    if (currentMotionStep === 0) {
-      // Current is knot, schedule switch to orbit
-      autoCycleTimer = setTimeout(() => {
-        if (userControlled || !canMove()) return;
+    // Step 0: The Knot (stays ~7.5s)
+    // Step 1: The Orbit / Sphere (stays ~7.5s)
+    // Step 2: Scatter ↗ (burst across the hero + reassemble into knot)
+    let delay = 7500;
+    if (currentMotionStep === 2) {
+      delay = 4800;
+    }
+
+    autoCycleTimer = setTimeout(() => {
+      if (!canMove() || userControlled) return;
+      if (currentMotionStep === 0) {
+        // Current is knot, transition to orbit
         currentMotionStep = 1;
         setShape('sphere', true);
         scheduleNextMotionStep();
-      }, 4500);
-    } else if (currentMotionStep === 1) {
-      // Current is orbit, schedule scatter
-      autoCycleTimer = setTimeout(() => {
-        if (userControlled || !canMove()) return;
+      } else if (currentMotionStep === 1) {
+        // Current is orbit, schedule scatter across the hero
         currentMotionStep = 2;
+        shapeButtons.forEach(b => b.setAttribute('aria-pressed', 'false'));
         triggerScatter(true);
-      }, 4500);
-    } else {
-      // Current is scatter, reassemble into knot
-      currentMotionStep = 0;
-      setShape('knot', true);
-      scheduleNextMotionStep();
-    }
+        scheduleNextMotionStep();
+      } else {
+        // Current is scatter, reassemble into knot
+        currentMotionStep = 0;
+        setShape('knot', true);
+        scheduleNextMotionStep();
+      }
+    }, delay);
   }
 
   function triggerClickWave(clientX, clientY) {
     const rect = canvas.getBoundingClientRect();
-    const cx = clientX - rect.left;
-    const cy = clientY - rect.top;
+    const hitX = clientX - rect.left;
+    const hitY = clientY - rect.top;
 
     // Expanding golden luster shockwave
     ripples.push({
-      x: cx,
-      y: cy,
+      x: hitX,
+      y: hitY,
       radius: 6,
       maxRadius: Math.min(width, height) * 0.95,
       intensity: 1.0,
       speed: Math.min(width, height) * 1.6
     });
 
-    // 3D torque impulse based on hit point
-    turnX += ((cx - width / 2) / width) * 0.28;
-    turnY += ((cy - height / 2) / height) * 0.28;
+    const {cx, cy} = getStageMetrics();
+    turnX += ((hitX - cx) / width) * 0.28;
+    turnY += ((hitY - cy) / height) * 0.28;
 
     // Dense golden burst sparks
     for (let i = 0; i < 36; i++) {
       const ang = Math.random() * Math.PI * 2;
       const spd = 60 + Math.random() * 240;
       sparks.push({
-        x: cx,
-        y: cy,
+        x: hitX,
+        y: hitY,
         vx: Math.cos(ang) * spd,
         vy: Math.sin(ang) * spd,
         life: 1.0,
@@ -465,9 +494,10 @@ export function initHeroVortex({getTheme, isPaused}) {
     triggerScatter(false);
   });
 
-  // Pointer interaction on canvas & stage
+  // Pointer interaction across the entire hero section
   let lastClickTime = 0;
-  canvas.addEventListener('pointerdown', e => {
+  hero.addEventListener('pointerdown', e => {
+    if (e.target.closest('button, a, input, select, textarea, [role="button"]')) return;
     const now = Date.now();
     triggerClickWave(e.clientX, e.clientY);
     refresh();
@@ -478,31 +508,26 @@ export function initHeroVortex({getTheme, isPaused}) {
     lastClickTime = now;
   });
 
-  stage.addEventListener('pointerdown', e => {
-    if (e.target.closest('button, a, canvas')) return;
-    triggerClickWave(e.clientX, e.clientY);
-    refresh();
-  });
-
-  stage.addEventListener('pointermove', e => {
+  hero.addEventListener('pointermove', e => {
     if (e.pointerType === 'touch') return;
     const rect = canvas.getBoundingClientRect();
     targetCursorX = e.clientX - rect.left;
     targetCursorY = e.clientY - rect.top;
     targetHoverEnergy = 1;
-    pointerX = (e.clientX - rect.left) / width - 0.5;
-    pointerY = ((e.clientY - rect.top) / height - 0.5) * 0.6;
+    const {cx, cy, stageWidth, stageHeight} = getStageMetrics();
+    pointerX = ((e.clientX - rect.left) - cx) / (stageWidth || 1);
+    pointerY = (((e.clientY - rect.top) - cy) / (stageHeight || 1)) * 0.6;
     if (!canMove()) refresh();
   });
 
-  stage.addEventListener('pointerenter', e => {
+  hero.addEventListener('pointerenter', e => {
     const rect = canvas.getBoundingClientRect();
     targetCursorX = e.clientX - rect.left;
     targetCursorY = e.clientY - rect.top;
     targetHoverEnergy = 1;
   });
 
-  stage.addEventListener('pointerleave', () => {
+  hero.addEventListener('pointerleave', () => {
     pointerX = 0;
     pointerY = 0;
     targetHoverEnergy = 0;
@@ -519,6 +544,7 @@ export function initHeroVortex({getTheme, isPaused}) {
     });
   });
 
+  new ResizeObserver(resize).observe(hero);
   new ResizeObserver(resize).observe(canvas);
   new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting || entry.intersectionRatio > 0;
