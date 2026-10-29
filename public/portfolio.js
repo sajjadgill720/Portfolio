@@ -30,7 +30,7 @@ if (typeof document !== 'undefined') {
   // The spiral is drawn locally; no downloaded animation or third-party assets.
   document.querySelectorAll('[data-icon]').forEach(el=>el.innerHTML=icon(el.dataset.icon));
   let theme='light';try{theme=localStorage.getItem('sajjad-theme')==='dark'?'dark':'light';}catch{}
-  function applyTheme(){document.documentElement.dataset.theme=theme;const dark=theme==='dark',button=$('#theme-toggle');button.innerHTML=icon(dark?'moon':'sun');button.setAttribute('aria-pressed',String(dark));button.setAttribute('aria-label',dark?'Switch to light theme':'Switch to dark theme');document.querySelector('meta[name="theme-color"]').content=dark?'#171d18':'#f5f4eb';}
+  function applyTheme(){document.documentElement.dataset.theme=theme;const dark=theme==='dark',button=$('#theme-toggle');button.innerHTML=icon(dark?'moon':'sun');button.setAttribute('aria-pressed',String(dark));button.setAttribute('aria-label',dark?'Switch to light theme':'Switch to dark theme');document.querySelector('meta[name="theme-color"]').content=dark?'#141618':'#f5f4eb';}
   applyTheme();$('#theme-toggle').onclick=()=>{theme=theme==='dark'?'light':'dark';applyTheme();try{localStorage.setItem('sajjad-theme',theme);}catch{}document.dispatchEvent(new Event('portfolio-theme-change'));};
   const motion=matchMedia('(prefers-reduced-motion: reduce)');
   let paused=motion.matches;
