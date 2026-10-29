@@ -7,8 +7,9 @@ export default function handler(req, res) {
   const email = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(process.env.CONTACT_EMAIL || '')
     ? process.env.CONTACT_EMAIL
     : profile.email;
+  const hasKey = !!(process.env.OPENAI_API_KEY || process.env.GROQ_API_KEY);
   res.status(200).json({
-    ai: !!(process.env.OPENAI_API_KEY && process.env.OPENAI_MODEL),
+    ai: hasKey,
     email
   });
 }
