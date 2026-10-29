@@ -65,6 +65,7 @@ export function initHeroVortex({getTheme, isPaused}) {
   let idleResumeTimer = null;
   let scatterTimeout = null;
   let currentMotionStep = 0; // 0 = knot, 1 = orbit, 2 = scatter
+  let isInitialCycle = true; // Speeds up the very first showcase transition on initial page load
   let userControlled = false;
 
   const canMove = () => !isPaused() && !reduce.matches;
@@ -98,8 +99,8 @@ export function initHeroVortex({getTheme, isPaused}) {
 
     if (animate) {
       angle += dt * 0.14;
-      morph += (target - morph) * 0.055;
-      burst += (burstTarget - burst) * 0.065;
+      morph += (target - morph) * 0.082;
+      burst += (burstTarget - burst) * 0.088;
       turnX += (pointerX - turnX) * 0.035;
       turnY += (pointerY - turnY) * 0.035;
       cursorX += (targetCursorX - cursorX) * 0.14;
@@ -354,6 +355,7 @@ export function initHeroVortex({getTheme, isPaused}) {
     clearTimeout(autoCycleTimer);
     clearTimeout(idleResumeTimer);
     userControlled = true;
+    isInitialCycle = false;
     // Resume gentle auto cycling after 14s of inactivity
     idleResumeTimer = setTimeout(() => {
       userControlled = false;
@@ -408,7 +410,7 @@ export function initHeroVortex({getTheme, isPaused}) {
         });
         setSubtitle('Move to turn. Tap to scatter. Or use the buttons.');
         refresh();
-      }, 3600);
+      }, 3200);
     }
   }
 
@@ -416,12 +418,14 @@ export function initHeroVortex({getTheme, isPaused}) {
     clearTimeout(autoCycleTimer);
     if (!canMove() || userControlled) return;
 
-    // Step 0: The Knot (stays ~7.5s)
-    // Step 1: The Orbit / Sphere (stays ~7.5s)
-    // Step 2: Scatter ↗ (burst across the hero + reassemble into knot)
-    let delay = 7500;
-    if (currentMotionStep === 2) {
-      delay = 4800;
+    // First time on page load: transition much faster (~2.4s) so visitors immediately see the shapes morph
+    let delay = 5200;
+    if (isInitialCycle && currentMotionStep === 0) {
+      delay = 2400; // Fast initial transition from knot to orbit
+    } else if (isInitialCycle && currentMotionStep === 1) {
+      delay = 3200; // Prompt transition into scatter
+    } else if (currentMotionStep === 2) {
+      delay = 3600; // Scatter showcase duration
     }
 
     autoCycleTimer = setTimeout(() => {
@@ -440,6 +444,7 @@ export function initHeroVortex({getTheme, isPaused}) {
       } else {
         // Current is scatter, reassemble into knot
         currentMotionStep = 0;
+        isInitialCycle = false;
         setShape('knot', true);
         scheduleNextMotionStep();
       }
