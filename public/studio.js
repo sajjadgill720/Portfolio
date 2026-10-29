@@ -1,4 +1,4 @@
-import {icon} from './icons.js';
+import {icon, getSkillIcon} from './icons.js';
 export function initStudio(){
  const $=s=>document.querySelector(s),reduce=matchMedia('(prefers-reduced-motion: reduce)');
  const canMove=()=>!reduce.matches&&!document.documentElement.classList.contains('motion-paused');
@@ -88,7 +88,7 @@ export function initStudio(){
  const processIcons=['qa','code','demo','automl'];document.querySelectorAll('.process-symbol').forEach((el,i)=>el.innerHTML=icon(processIcons[i]));
  $('.process-grid').insertAdjacentHTML('afterbegin','<div class="process-line" aria-hidden="true"><span></span></div>');
  const skillGroups=[['01','Interfaces',['React','TanStack Start','TypeScript','JavaScript']],['02','Systems',['FastAPI','Node.js','Express','PostgreSQL','Supabase','MongoDB']],['03','Intelligence',['Python','Pandas','NumPy','scikit-learn','LangGraph','Vector search']],['04','Foundations',['SQL','Java','Docker','Git']]];
- $('#skills').innerHTML=skillGroups.map(([n,title,skills])=>`<article class="toolkit-group"><header><span>${n}</span><h3>${title}</h3><span>↗</span></header><div>${skills.map((skill,i)=>`<span style="--skill-delay:${i*-.6}s">${skill}</span>`).join('')}</div></article>`).join('');
+ $('#skills').innerHTML=skillGroups.map(([n,title,skills])=>`<article class="toolkit-group"><header><span>${n}</span><h3>${title}</h3><span>↗</span></header><div>${skills.map((skill,i)=>`<span class="skill-pill" style="--skill-delay:${i*-.6}s"><i class="skill-icon" aria-hidden="true">${getSkillIcon(skill)}</i><span class="skill-label">${skill}</span></span>`).join('')}</div></article>`).join('');
  $('.toolkit>.eyebrow').insertAdjacentHTML('afterend','<h2>The tools change.<br><em>The curiosity stays.</em></h2>');
  const contact=$('#contact');contact.insertAdjacentHTML('afterbegin','<canvas id="contact-field" aria-hidden="true"></canvas><div class="contact-orbit orbit-one" aria-hidden="true"></div><div class="contact-orbit orbit-two" aria-hidden="true"></div><span class="contact-stamp" aria-hidden="true">GOOD THINGS<br>START WITH<br><em>a conversation.</em></span>');
  contact.querySelector('.eyebrow').textContent='YOUR NEXT IDEA STARTS HERE / LET’S CONNECT';

@@ -1,7 +1,7 @@
 import {profile, projects, projectUrl} from './data.js';
 import {answerLocally} from './knowledge.js';
 import {initMotion} from './motion.js';
-import {icon} from './icons.js';
+import {icon, getSkillIcon} from './icons.js';
 import {initStudio} from './studio.js';
 import {initHeroVortex} from './hero-vortex.js';
 import {initBrief} from './brief-experience.js';
@@ -24,7 +24,7 @@ if (typeof document !== 'undefined') {
    };
    return p.theme==='gift'?'<div class="gift-art">The moments<br>we keep.<small>KEEPSAKE / ARTWORK CONCEPT</small></div>':`<div class="concept">${bar}${visuals[p.theme]}</div>`;
   }
-  $('#skills').innerHTML=profile.skills.map(s=>`<span>${escape(s)}</span>`).join('');
+  $('#skills').innerHTML=profile.skills.map((s,i)=>`<span class="skill-pill" style="--skill-delay:${i*-.6}s"><i class="skill-icon" aria-hidden="true">${getSkillIcon(s)}</i><span class="skill-label">${escape(s)}</span></span>`).join('');
   window.addEventListener('scroll',()=>{$('.progress').style.width=`${window.scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight)*100}%`;},{passive:true});
 
   // The spiral is drawn locally; no downloaded animation or third-party assets.
